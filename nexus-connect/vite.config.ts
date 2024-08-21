@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import Icons from 'unplugin-icons/vite';
 import { defineConfig } from 'vite';
 import UnoCSS from 'unocss/vite';
+import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
@@ -12,6 +13,10 @@ export default defineConfig(async () => ({
     Icons({ compiler: 'jsx', jsx: 'react' }),
     UnoCSS(),
   ],
+
+  resolve: {
+    alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],
+  },
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
