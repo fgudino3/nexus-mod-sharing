@@ -12,9 +12,14 @@
   "tauri": {
     "allowlist": {
       "all": false,
-      "shell": {
+      "path": {
+        "all": true
+      },
+      "fs": {
         "all": false,
-        "open": true
+        "exists": true,
+        "readFile": true,
+        "scope": ["**"]
       }
     },
     "windows": [

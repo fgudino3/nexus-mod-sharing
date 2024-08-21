@@ -1,21 +1,6 @@
-import { useState } from 'react';
-import { invoke } from '@tauri-apps/api/tauri';
 import { NavLink } from 'react-router-dom';
-import '../App.css';
 
 export default function ModManagerSelection() {
-  const [greetMsg, setGreetMsg] = useState('');
-  const [name, setName] = useState('');
-
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    setGreetMsg(await invoke('greet', { name }));
-  }
-
-  async function todo() {
-    // TODO
-  }
-
   return (
     <>
       <div className="flex flex-col items-center justify-center h-full">
