@@ -1,11 +1,17 @@
-import oxlintPlugin from "vite-plugin-oxlint";
-import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
-import UnoCSS from "unocss/vite";
+import oxlintPlugin from 'vite-plugin-oxlint';
+import react from '@vitejs/plugin-react';
+import Icons from 'unplugin-icons/vite';
+import { defineConfig } from 'vite';
+import UnoCSS from 'unocss/vite';
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
-  plugins: [react(), oxlintPlugin({ path: 'src' }), UnoCSS()],
+  plugins: [
+    react(),
+    oxlintPlugin({ path: 'src' }),
+    Icons({ compiler: 'jsx', jsx: 'react' }),
+    UnoCSS(),
+  ],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
@@ -17,7 +23,7 @@ export default defineConfig(async () => ({
     strictPort: true,
     watch: {
       // 3. tell vite to ignore watching `src-tauri`
-      ignored: ["**/src-tauri/**"],
+      ignored: ['**/src-tauri/**'],
     },
   },
 }));

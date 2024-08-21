@@ -7,5 +7,5 @@ export default function App() {
     <div className="container mx-auto h-screen w-screen">
       <RouterProvider router={router} />
     </div>
-  )
+  );
 }
