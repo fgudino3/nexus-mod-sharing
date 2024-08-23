@@ -47,6 +47,8 @@ export default function VortexModListReader() {
 
       const vortexDataObj = JSON.parse(jsonString);
 
+      console.log(vortexDataObj.persistent.mods.fallout4);
+
       modState.parseVortexBackup(vortexDataObj.persistent.mods);
 
       setGameNames(() => Object.keys(vortexDataObj.persistent.mods));

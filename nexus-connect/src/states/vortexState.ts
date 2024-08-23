@@ -22,7 +22,7 @@ export const useModState = create<ModState>()((set) => ({
 
         modList.push({
           id: modData.id,
-          name: modData.attributes.modName,
+          name: modData.attributes.modName ?? modData.attributes.name,
           author: modData.attributes.author,
           pageUrl: modData.attributes.homepage,
           imageUrl: modData.attributes.pictureUrl,

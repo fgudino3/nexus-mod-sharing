@@ -6,7 +6,7 @@ import { RouteObject } from 'react-router-dom';
 
 export const READER_ROUTES: RouteObject[] = [
   {
-    path: '/',
+    path: '/reader',
     element: <ModManagerSelection />,
   },
   {
