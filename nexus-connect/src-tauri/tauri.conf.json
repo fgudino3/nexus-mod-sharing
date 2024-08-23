@@ -20,6 +20,13 @@
         "exists": true,
         "readFile": true,
         "scope": ["**"]
+      },
+      "shell": {
+        "all": false,
+        "execute": false,
+        "open": true,
+        "scope": [],
+        "sidecar": false
       }
     },
     "windows": [

@@ -8,14 +8,14 @@ export default function ModManagerSelection() {
         <h3 className="mt-3 font-medium text-lg">Select your mod manager</h3>
 
         <div className="flex justify-center space-x-3xl">
-          <NavLink to="/vortex-reader" className="logo-button">
+          <NavLink to="/vortex" className="logo-button">
             <img
               src="/vortex-logo.png"
               className="logo vortex"
               alt="Vortex logo"
             />
           </NavLink>
-          <NavLink to="/mo2-reader" className="logo-button">
+          <NavLink to="/mo2" className="logo-button">
             <img src="/mo2-logo.png" className="logo react" alt="React logo" />
           </NavLink>
         </div>

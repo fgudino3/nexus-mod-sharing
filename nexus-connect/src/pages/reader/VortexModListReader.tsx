@@ -5,21 +5,29 @@ import { fs, invoke } from '@tauri-apps/api';
 import { useState, useEffect } from 'react';
 import MdiError from '~icons/mdi/error';
 import { NexusButton } from '@/components/NexusButton';
+import { useModState } from '@/states/vortexState';
 
 const DEFAULT_VORTEX_BACKUP_PATH =
   'C:\\Users\\{user}\\AppData\\Roaming\\Vortex\\temp\\state_backups_full\\startup.json';
 
 export default function VortexModListReader() {
   const [appData, setAppData] = useState<string>(DEFAULT_VORTEX_BACKUP_PATH);
-  const [vortexData, setVortexData] = useState<string[]>([]);
   const [backupFileExists, setBackupFileExists] = useState<boolean>(false);
+  const [gameNames, setGameNames] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
+  const modState = useModState();
 
   useEffect(() => {
-    getVortexBackupPath().then((path) => {
-      readVortexBackup(path);
-    });
+    if (modState.moddedGames.size > 0) {
+      setGameNames(() => [...modState.moddedGames.keys()]);
+      setBackupFileExists(() => true);
+      setLoading(() => false);
+    } else {
+      getVortexBackupPath().then((path) => {
+        readVortexBackup(path);
+      });
+    }
   }, []);
 
   async function getVortexBackupPath() {
@@ -30,6 +38,8 @@ export default function VortexModListReader() {
   }
 
   async function readVortexBackup(path: string) {
+    setLoading(() => true);
+
     try {
       const jsonString = await fs.readTextFile(path);
 
@@ -37,7 +47,9 @@ export default function VortexModListReader() {
 
       const vortexDataObj = JSON.parse(jsonString);
 
-      setVortexData(() => Object.keys(vortexDataObj.persistent.mods));
+      modState.parseVortexBackup(vortexDataObj.persistent.mods);
+
+      setGameNames(() => Object.keys(vortexDataObj.persistent.mods));
     } catch (error) {
       setBackupFileExists(() => false);
       console.error(error);
@@ -70,7 +82,7 @@ export default function VortexModListReader() {
         <GameSelectionList
           loading={loading}
           exists={backupFileExists}
-          vortexData={vortexData}
+          gameNames={gameNames}
           readVortexBackup={() => readVortexBackup(appData)}
         />
       </div>
@@ -97,7 +109,7 @@ function StatusIcon({
 function GameSelectionList({
   exists,
   loading,
-  vortexData,
+  gameNames,
   readVortexBackup,
 }: VortexProps) {
   const navigate = useNavigate();
@@ -113,15 +125,15 @@ function GameSelectionList({
       <>
         <h3 className="text-2xl font-bold my-5">Select a game</h3>
         <div className="grid grid-cols-3 gap-6">
-          {vortexData.map((key) => (
+          {gameNames.map((gameName) => (
             <NexusButton
               onClick={async () => {
-                navigate('/vortex-reader/preview');
+                navigate('/vortex/' + gameName);
               }}
               className="px-3 py-2 rounded-md bg-amber-600"
-              key={key}
+              key={gameName}
             >
-              {key}
+              {gameName}
             </NexusButton>
           ))}
         </div>
@@ -145,6 +157,6 @@ function GameSelectionList({
 type VortexProps = {
   exists: boolean;
   loading: boolean;
-  vortexData: string[];
+  gameNames: string[];
   readVortexBackup: () => Promise<void>;
 };
