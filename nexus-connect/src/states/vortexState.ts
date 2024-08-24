@@ -20,14 +20,26 @@ export const useModState = create<ModState>()((set) => ({
       for (const modName of modNames) {
         const modData = gameMods[modName];
 
+        const sameMod = modList.find(
+          (mod) => modData.attributes.modId === mod.id
+        );
+
+        if (sameMod) {
+          sameMod.isPatched = true;
+          continue;
+        }
+
         modList.push({
-          id: modData.id,
+          id: modData.attributes.modId,
           name: modData.attributes.modName ?? modData.attributes.name,
           author: modData.attributes.author,
           pageUrl: modData.attributes.homepage,
           imageUrl: modData.attributes.pictureUrl,
           description: modData.attributes.shortDescription,
           installed: modData.state === 'installed',
+          fileSizeBytes: modData.attributes.fileSize,
+          version: modData.attributes.version,
+          isPatched: false,
         });
       }
 
