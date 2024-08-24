@@ -27,6 +27,14 @@
         "open": true,
         "scope": [],
         "sidecar": false
+      },
+      "dialog": {
+        "all": false,
+        "ask": false,
+        "confirm": false,
+        "message": false,
+        "open": true,
+        "save": false
       }
     },
     "windows": [

@@ -15,5 +15,5 @@ export function NexusButton({
 
 interface NexusButtonProps extends React.PropsWithChildren {
   className?: string;
-  onClick: () => Promise<void>;
+  onClick: () => void;
 }

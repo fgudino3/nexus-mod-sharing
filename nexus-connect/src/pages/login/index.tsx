@@ -24,7 +24,7 @@ export default function Login() {
           onChange={(e) => setNexusApiKey(e.currentTarget.value)}
           className="bg-gray-700 outline-none rounded-md mt-10 text-lg px-4 py-2"
         />
-        <NexusButton onClick={async () => saveNexusApiKey(nexusApiKey)}>
+        <NexusButton onClick={() => saveNexusApiKey(nexusApiKey)}>
           Save
         </NexusButton>
       </div>

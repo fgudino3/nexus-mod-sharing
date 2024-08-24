@@ -129,7 +129,7 @@ function GameSelectionList({
         <div className="grid grid-cols-3 gap-6">
           {gameNames.map((gameName) => (
             <NexusButton
-              onClick={async () => {
+              onClick={() => {
                 navigate('/vortex/' + gameName);
               }}
               className="px-3 py-2 rounded-md bg-amber-600"
