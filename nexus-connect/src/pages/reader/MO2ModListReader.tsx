@@ -50,7 +50,7 @@ export default function VortexModListReader() {
           <table>
             <tbody>
               {moMods.map((mod) => (
-                <tr>
+                <tr key={mod.priority}>
                   <td>{mod.priority}</td>
                   <td>{mod.status}</td>
                   <td>{mod.name}</td>
