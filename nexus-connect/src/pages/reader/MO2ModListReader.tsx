@@ -5,9 +5,11 @@ import { invoke } from '@tauri-apps/api';
 import { useState } from 'react';
 
 interface MoMod {
-  priority: string;
-  status: string;
+  id: number;
   name: string;
+  pageUrl: string;
+  version: string;
+  status: string;
 }
 
 export default function VortexModListReader() {
@@ -16,9 +18,11 @@ export default function VortexModListReader() {
 
   async function selectMoCsvFile() {
     try {
-      const mods = await invoke<MoMod[]>('select_mo_csv_file');
+      const mods = await invoke<MoMod[] | null>('select_mo_csv_file');
 
-      setMoMods(() => mods);
+      if (mods) {
+        setMoMods(() => mods);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -50,10 +54,10 @@ export default function VortexModListReader() {
           <table>
             <tbody>
               {moMods.map((mod) => (
-                <tr key={mod.priority}>
-                  <td>{mod.priority}</td>
-                  <td>{mod.status}</td>
+                <tr key={mod.id} className="flex space-x-10">
                   <td>{mod.name}</td>
+                  <td>{mod.pageUrl}</td>
+                  <td>{mod.version}</td>
                 </tr>
               ))}
             </tbody>

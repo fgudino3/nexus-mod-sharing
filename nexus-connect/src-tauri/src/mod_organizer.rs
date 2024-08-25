@@ -6,18 +6,22 @@ extern crate csv;
 
 #[derive(Serialize, Deserialize)]
 pub struct MoMod {
-    #[serde(rename(serialize = "priority", deserialize = "#Mod_Priority"))]
-    mod_priority: String,
-    #[serde(rename(serialize = "status", deserialize = "#Mod_Status"))]
-    mod_status: String,
-    #[serde(rename(serialize = "name", deserialize = "#Mod_Name"))]
-    mod_name: String,
+    #[serde(rename(deserialize = "#Nexus_ID"))]
+    id: u32,
+    #[serde(rename(deserialize = "#Mod_Name"))]
+    name: String,
+    #[serde(rename(deserialize = "#Mod_Status"))]
+    status: String,
+    #[serde(rename(deserialize = "#Mod_Version"))]
+    version: String,
+    #[serde(rename(serialize = "pageUrl", deserialize = "#Mod_Nexus_URL"))]
+    page_url: String,
 }
 
 #[tauri::command]
 pub async fn select_mo_csv_file() -> Result<Option<Vec<MoMod>>, String> {
     let file_path = FileDialogBuilder::new()
-        .add_filter("CSV", &["csv"])
+        .add_filter("CSV", &["csv", "txt"])
         .pick_file();
 
     match file_path {
@@ -42,7 +46,7 @@ fn parse_mods_from_csv(file: File) -> Result<Option<Vec<MoMod>>, String> {
             Ok(mo_mod) => {
                 mo_mods.push(mo_mod);
             }
-            _ => return Err("The file did not have the correct structure".into()),
+            _ => return Err("The file is missing required columns".into()),
         }
     }
 
