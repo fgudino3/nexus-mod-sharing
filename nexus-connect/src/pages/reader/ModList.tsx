@@ -1,5 +1,5 @@
 import MdiExternalLink from '~icons/mdi/external-link';
-import { useModState } from '@/states/vortexState';
+import { useModState } from '@/states/modState';
 import { useParams } from 'react-router-dom';
 import { shell } from '@tauri-apps/api';
 import Mod from '@/interfaces/Mod';
@@ -15,7 +15,7 @@ export default function ModList() {
     );
   }
 
-  const modList = useModState((state) => state.moddedGames.get(gameName));
+  const modList = useModState((state) => state.vortexModdedGames.get(gameName));
 
   if (!modList) {
     return (

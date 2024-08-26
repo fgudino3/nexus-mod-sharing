@@ -1,11 +1,12 @@
 import MdiCheckboxMarkedCircle from '~icons/mdi/checkbox-marked-circle';
 import MdiArrowLeft from '~icons/mdi/arrow-left';
 import { useNavigate } from 'react-router-dom';
-import { fs, invoke } from '@tauri-apps/api';
+import { fs } from '@tauri-apps/api';
 import { useState, useEffect } from 'react';
 import MdiError from '~icons/mdi/error';
 import { NexusButton } from '@/components/NexusButton';
-import { useModState } from '@/states/vortexState';
+import { useModState } from '@/states/modState';
+import Commands from '@/services/commands';
 
 const DEFAULT_VORTEX_BACKUP_PATH =
   'C:\\Users\\{user}\\AppData\\Roaming\\Vortex\\temp\\state_backups_full\\startup.json';
@@ -19,8 +20,8 @@ export default function VortexModListReader() {
   const modState = useModState();
 
   useEffect(() => {
-    if (modState.moddedGames.size > 0) {
-      setGameNames(() => [...modState.moddedGames.keys()]);
+    if (modState.vortexModdedGames.size > 0) {
+      setGameNames(() => [...modState.vortexModdedGames.keys()]);
       setBackupFileExists(() => true);
       setLoading(() => false);
     } else {
@@ -31,7 +32,7 @@ export default function VortexModListReader() {
   }, []);
 
   async function getVortexBackupPath() {
-    const backupPath = await invoke<string>('get_vortex_backup_path');
+    const backupPath = await Commands.getVortexBackupPath();
     setAppData(() => backupPath);
 
     return backupPath;

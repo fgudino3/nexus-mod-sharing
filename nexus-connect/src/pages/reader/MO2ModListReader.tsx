@@ -1,27 +1,21 @@
 import { NexusButton } from '@/components/NexusButton';
+import { mapMoModsToMods } from '@/utils/mapping';
 import MdiArrowLeft from '~icons/mdi/arrow-left';
 import { useNavigate } from 'react-router-dom';
-import { invoke } from '@tauri-apps/api';
+import Commands from '@/services/commands';
+import Mod from '@/interfaces/Mod';
 import { useState } from 'react';
 
-interface MoMod {
-  id: number;
-  name: string;
-  pageUrl: string;
-  version: string;
-  status: string;
-}
-
 export default function VortexModListReader() {
-  const [moMods, setMoMods] = useState<MoMod[]>([]);
+  const [moMods, setMoMods] = useState<Mod[]>([]);
   const navigate = useNavigate();
 
   async function selectMoCsvFile() {
     try {
-      const mods = await invoke<MoMod[] | null>('select_mo_csv_file');
+      const mods = await Commands.readModOrganizerList();
 
       if (mods) {
-        setMoMods(() => mods);
+        setMoMods(() => mapMoModsToMods(mods));
       }
     } catch (error) {
       console.error(error);
