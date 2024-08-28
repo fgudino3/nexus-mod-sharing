@@ -1,21 +1,61 @@
 import MdiExternalLink from '~icons/mdi/external-link';
 import { useModState } from '@/states/modState';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { shell } from '@tauri-apps/api';
 import Mod from '@/interfaces/Mod';
+import { useEffect, useState } from 'react';
+import { useUserState } from '@/states/userState';
+import { emit, listen, UnlistenFn } from '@tauri-apps/api/event';
 
 export default function ModList() {
   const { gameName } = useParams();
+  const { pathname } = useLocation();
+  const [modList, setModList] = useState<Mod[]>([]);
+  const vortexMods = useModState((state) =>
+    state.vortexModdedGames.get(gameName!)
+  );
+  const moModList = useModState((state) => state.moModList);
+  const apikey = useUserState((state) => state.nexusApiKey);
 
-  if (!gameName) {
-    return (
-      <div>
-        <p>Page not found</p>
-      </div>
-    );
-  }
+  // if (!gameName) {
+  //   return (
+  //     <div>
+  //       <p>Page not found</p>
+  //     </div>
+  //   );
+  // }
 
-  const modList = useModState((state) => state.vortexModdedGames.get(gameName));
+  useEffect(() => {
+    let listenPromise: Promise<UnlistenFn> | undefined;
+
+    if (pathname.includes('vortex')) {
+      setModList(() => vortexMods ?? []);
+    } else {
+      const startTime = new Date();
+      const slicedList = moModList.slice(0, 10);
+      const nexusModUrls = slicedList.map(
+        (mod) =>
+          `https://api.nexusmods.com/v1/games/starfield/mods/${mod.id}.json`
+      );
+      emit('process_mo_mods', { apikey, nexusModUrls, nexusMods: slicedList });
+
+      listenPromise = listen('mods_processed', (event: any) => {
+        console.log(
+          event,
+          `Elapsed Time: ${new Date().getTime() - startTime.getTime()} ms`
+        );
+        setModList(() => event.payload.mods);
+      });
+      // getMoModMetadata(gameName!, apikey).then(() => {
+      //   setModList(() => moModList);
+      // });
+    }
+    console.log('done with useEffect. listening for async event');
+
+    return () => {
+      listenPromise?.then((unlisten) => unlisten());
+    };
+  }, []);
 
   if (!modList) {
     return (

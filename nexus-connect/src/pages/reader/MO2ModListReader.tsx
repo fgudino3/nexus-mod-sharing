@@ -3,11 +3,10 @@ import { mapMoModsToMods } from '@/utils/mapping';
 import MdiArrowLeft from '~icons/mdi/arrow-left';
 import { useNavigate } from 'react-router-dom';
 import Commands from '@/services/commands';
-import Mod from '@/interfaces/Mod';
-import { useState } from 'react';
+import { useModState } from '@/states/modState';
 
 export default function VortexModListReader() {
-  const [moMods, setMoMods] = useState<Mod[]>([]);
+  const setMoModList = useModState((state) => state.setMoModList);
   const navigate = useNavigate();
 
   async function selectMoCsvFile() {
@@ -15,7 +14,8 @@ export default function VortexModListReader() {
       const mods = await Commands.readModOrganizerList();
 
       if (mods) {
-        setMoMods(() => mapMoModsToMods(mods));
+        setMoModList(mapMoModsToMods(mods));
+        navigate('/mo2/starfield');
       }
     } catch (error) {
       console.error(error);
@@ -45,17 +45,6 @@ export default function VortexModListReader() {
           <NexusButton onClick={selectMoCsvFile} className="mt-10">
             Open Mod List CSV File
           </NexusButton>
-          <table>
-            <tbody>
-              {moMods.map((mod) => (
-                <tr key={mod.id} className="flex space-x-10">
-                  <td>{mod.name}</td>
-                  <td>{mod.pageUrl}</td>
-                  <td>{mod.version}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
       </div>
     </>

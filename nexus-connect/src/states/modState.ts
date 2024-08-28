@@ -2,12 +2,18 @@ import Mod from '@/interfaces/Mod';
 import { create } from 'zustand';
 
 interface ModState {
+  moModList: Mod[];
   vortexModdedGames: Map<string, Mod[]>;
+  setMoModList: (moModList: Mod[]) => void;
   parseVortexBackup: (backupData: any) => void;
 }
 
 export const useModState = create<ModState>()((set) => ({
   vortexModdedGames: new Map<string, Mod[]>(),
+  moModList: [],
+  setMoModList(moModList: Mod[]) {
+    set({ moModList });
+  },
   parseVortexBackup(backupData: any) {
     const modMap: [gameName: string, mod: Mod[]][] = [];
     const gameNames: string[] = Object.keys(backupData);
