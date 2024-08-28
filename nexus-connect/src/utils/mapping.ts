@@ -18,6 +18,7 @@ export function mapMoModsToMods(moMods: MoMod[]): Mod[] {
       pageUrl: moMod.pageUrl,
       version: moMod.version,
       installed: moMod.status === '+',
+      order: moMod.order,
       isPatched: false,
     });
   }

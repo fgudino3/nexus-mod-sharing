@@ -32,7 +32,7 @@ export default function ModList() {
       setModList(() => vortexMods ?? []);
     } else {
       const startTime = new Date();
-      const slicedList = moModList.slice(0, 10);
+      const slicedList = moModList.slice(0);
       const nexusModUrls = slicedList.map(
         (mod) =>
           `https://api.nexusmods.com/v1/games/starfield/mods/${mod.id}.json`
@@ -44,7 +44,11 @@ export default function ModList() {
           event,
           `Elapsed Time: ${new Date().getTime() - startTime.getTime()} ms`
         );
-        setModList(() => event.payload.mods);
+        setModList(() =>
+          (event.payload.mods as Mod[]).sort((a, b) =>
+            a.order!.localeCompare(b.order!)
+          )
+        );
       });
       // getMoModMetadata(gameName!, apikey).then(() => {
       //   setModList(() => moModList);

@@ -4,6 +4,7 @@ export default interface Mod {
   pageUrl: string;
   version: string;
   installed: boolean;
+  order?: string;
   author?: string;
   imageUrl?: string;
   description?: string;

@@ -44,16 +44,19 @@ pub async fn handle_mo_mod_processing(
 
                     match nc_mod {
                         Some(m) => {
-                            m.author = Some(nexus_mod.author.clone());
-                            m.image_url = Some(nexus_mod.picture_url.clone());
-                            m.description = Some(nexus_mod.description.clone());
+                            m.author = nexus_mod.author.clone();
+                            m.image_url = nexus_mod.picture_url.clone();
+                            m.description = nexus_mod.description.clone();
 
                             m.clone()
                         }
                         _ => panic!("Mod does not exist"),
                     }
                 }
-                Err(_) => panic!("Error getting mod"),
+                Err(err) => {
+                    eprint!("{:#?}", err);
+                    panic!("Error getting mod");
+                }
             },
             Err(_) => panic!("Error collecting buffers"),
         })

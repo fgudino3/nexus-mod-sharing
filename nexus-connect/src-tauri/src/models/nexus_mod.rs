@@ -5,8 +5,8 @@ pub struct NexusMod {
     #[serde(rename(deserialize = "mod_id"))]
     pub id: u32,
     #[serde(rename(deserialize = "summary"))]
-    pub description: String,
+    pub description: Option<String>,
     #[serde(rename(serialize = "imageUrl"))]
-    pub picture_url: String,
-    pub author: String,
+    pub picture_url: Option<String>,
+    pub author: Option<String>,
 }

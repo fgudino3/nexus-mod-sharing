@@ -4,6 +4,8 @@ use serde::{Deserialize, Serialize};
 pub struct MoMod {
     #[serde(rename(deserialize = "#Nexus_ID"))]
     id: u32,
+    #[serde(rename(deserialize = "#Mod_Priority"))]
+    order: String,
     #[serde(rename(deserialize = "#Mod_Name"))]
     name: String,
     #[serde(rename(deserialize = "#Mod_Status"))]

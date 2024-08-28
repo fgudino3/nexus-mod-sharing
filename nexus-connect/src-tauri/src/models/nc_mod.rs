@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 pub struct NcMod {
     pub id: u32,
     pub name: String,
+    pub order: String,
     #[serde(rename = "pageUrl")]
     pub page_url: String,
     pub version: String,
