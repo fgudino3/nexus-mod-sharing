@@ -1,6 +1,6 @@
 from django.urls import path, URLPattern
-from . import views
+from .views import ModView
 
 urlpatterns: URLPattern = [
-    path('mods', views.ModView.as_view()),
+    path('', ModView.as_view()),
 ]
