@@ -1,5 +1,6 @@
 from .controllers.accounts import AccountController
 from .lib.providers import provide_limit_offset_pagination
+from .lib.jwt import jwt_auth
 
 from litestar.contrib.sqlalchemy.plugins import (
     AsyncSessionConfig,
@@ -27,6 +28,7 @@ async def on_startup() -> None:
 app = Litestar(
     route_handlers=[AccountController],
     on_startup=[on_startup],
+    on_app_init=[jwt_auth.on_app_init],
     plugins=[SQLAlchemyInitPlugin(config=sqlalchemy_config)],
     dependencies={"limit_offset": Provide(provide_limit_offset_pagination)},
 )
