@@ -1,1 +1,2 @@
-litestar[standard]
+litestar[standard,sqlalchemy,jwt]
+sqlalchemy[aiosqlite]
