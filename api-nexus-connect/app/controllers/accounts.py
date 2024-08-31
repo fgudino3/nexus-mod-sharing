@@ -6,7 +6,7 @@ from app.models.account import (
     AccountReadDTO,
 )
 
-from litestar import Controller, get
+from litestar import Controller, get, post
 from litestar.di import Provide
 from litestar.pagination import OffsetPagination
 from litestar.repository.filters import LimitOffset
@@ -34,3 +34,13 @@ class AccountController(Controller):
             limit=limit_offset.limit,
             offset=limit_offset.offset,
         )
+
+    @post()
+    async def create_account(
+        self, accounts_repo: AccountRepository, data: Account
+    ) -> Account:
+        created_account = await accounts_repo.add(data)
+
+        await accounts_repo.session.commit()
+
+        return created_account
