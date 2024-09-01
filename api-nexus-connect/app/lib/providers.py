@@ -1,13 +1,13 @@
-from app.models.account import AccountRepository
+from app.models.user import UserRepository
 
 from litestar.params import Parameter
 from litestar.repository.filters import LimitOffset
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-async def provide_accounts_repo(db_session: AsyncSession) -> AccountRepository:
+async def provide_accounts_repo(db_session: AsyncSession) -> UserRepository:
     """This provides the default Authors repository."""
-    return AccountRepository(session=db_session)
+    return UserRepository(session=db_session)
 
 
 async def provide_limit_offset_pagination(
