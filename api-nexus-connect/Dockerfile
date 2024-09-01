@@ -45,7 +45,7 @@ USER appuser
 COPY . .
 
 # Expose the port that the application listens on.
-EXPOSE 80
+EXPOSE 8000
 
 # Run the application.
-CMD litestar run -r --host 0.0.0.0 --port 80
+CMD litestar run -r --host 0.0.0.0
