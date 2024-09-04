@@ -3,7 +3,6 @@ from typing import Any
 
 from litestar.contrib.sqlalchemy.base import UUIDBase
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO, SQLAlchemyDTOConfig
-from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository
 from litestar_users.adapter.sqlalchemy.mixins import SQLAlchemyUserMixin
 from litestar_users.service import BaseUserService
 from litestar.dto import DataclassDTO
@@ -28,12 +27,8 @@ class UserRegistrationDTO(DataclassDTO[UserRegistrationSchema]):
     """User registration DTO."""
 
 
-class UserRepository(SQLAlchemyAsyncRepository[User]):
-    model_type = User
-
-
 class UserReadDTO(SQLAlchemyDTO[User]):
-    config = SQLAlchemyDTOConfig()
+    config = SQLAlchemyDTOConfig(rename_strategy="camel")
 
 
 class UserUpdateDTO(SQLAlchemyDTO[User]):
