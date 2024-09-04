@@ -22,6 +22,7 @@ export const useModState = create<ModState>()((set) => ({
       const gameMods = backupData[gameName];
       const modNames = Object.keys(gameMods);
       const modList: Mod[] = [];
+      let orderCounter = 0;
 
       for (const modName of modNames) {
         const modData = gameMods[modName];
@@ -44,7 +45,8 @@ export const useModState = create<ModState>()((set) => ({
           description: modData.attributes.shortDescription,
           installed: modData.state === 'installed',
           fileSizeBytes: modData.attributes.fileSize,
-          version: modData.attributes.version,
+          version: modData.attributes.modVersion,
+          order: (orderCounter++).toString().padStart(4, '0'),
           isPatched: false,
         });
       }

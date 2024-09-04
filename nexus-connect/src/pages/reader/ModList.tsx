@@ -30,6 +30,7 @@ export default function ModList() {
 
     if (pathname.includes('vortex')) {
       setModList(() => vortexMods ?? []);
+      console.log(vortexMods);
     } else {
       const startTime = new Date();
       const slicedList = moModList.slice(0);
