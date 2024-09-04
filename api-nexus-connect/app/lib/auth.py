@@ -6,13 +6,22 @@ from app.models.user import (
     UserRegistrationDTO,
     UserService,
 )
+from app.models.role import (
+    Role,
+    RoleCreateDTO,
+    RoleReadDTO,
+    RoleUpdateDTO,
+)
 
 from litestar.security.jwt import JWTAuth, Token
 
 from litestar_users import LitestarUsersConfig, LitestarUsersPlugin
+from litestar_users.guards import roles_accepted, roles_required
 from litestar_users.config import (
     AuthHandlerConfig,
     CurrentUserHandlerConfig,
+    RoleManagementHandlerConfig,
+    UserManagementHandlerConfig,
     PasswordResetHandlerConfig,
     RegisterHandlerConfig,
     VerificationHandlerConfig,
@@ -33,14 +42,21 @@ litestar_users = LitestarUsersPlugin(
         user_read_dto=UserReadDTO,
         user_registration_dto=UserRegistrationDTO,
         user_update_dto=UserUpdateDTO,
+        role_model=Role,  # pyright: ignore
+        role_create_dto=RoleCreateDTO,
+        role_read_dto=RoleReadDTO,
+        role_update_dto=RoleUpdateDTO,
         user_service_class=UserService,  # pyright: ignore
         auth_handler_config=AuthHandlerConfig(),
         current_user_handler_config=CurrentUserHandlerConfig(),
         password_reset_handler_config=PasswordResetHandlerConfig(),
         register_handler_config=RegisterHandlerConfig(),
-        # user_management_handler_config=UserManagementHandlerConfig(
-        #     guards=[example_authorization_guard]
-        # ),
+        role_management_handler_config=RoleManagementHandlerConfig(
+            guards=[roles_accepted("administrator")]
+        ),
+        user_management_handler_config=UserManagementHandlerConfig(
+            guards=[roles_required("administrator")]
+        ),
         verification_handler_config=VerificationHandlerConfig(),
         auto_commit_transactions=True,
     )
