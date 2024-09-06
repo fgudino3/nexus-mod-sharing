@@ -8,3 +8,5 @@ load_dotenv(find_dotenv())
 
 class AppConfig:
     JWT_SECRET = os.environ["JWT_SECRET"]
+    GMAIL_EMAIL = os.environ["GMAIL_EMAIL"]
+    GMAIL_APP_PASSWORD = os.environ["GMAIL_APP_PASSWORD"]

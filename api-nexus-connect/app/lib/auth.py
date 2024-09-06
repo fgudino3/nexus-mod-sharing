@@ -1,10 +1,10 @@
+from app.services.user_service import UserService
 from app.settings import AppConfig
 from app.models.user import (
     User,
     UserReadDTO,
     UserUpdateDTO,
     UserRegistrationDTO,
-    UserService,
 )
 from app.models.role import (
     Role,
@@ -16,7 +16,6 @@ from app.models.role import (
 from litestar.security.jwt import JWTAuth, Token
 
 from litestar_users import LitestarUsersConfig, LitestarUsersPlugin
-from litestar_users.guards import roles_accepted, roles_required
 from litestar_users.config import (
     AuthHandlerConfig,
     CurrentUserHandlerConfig,
@@ -52,10 +51,10 @@ litestar_users = LitestarUsersPlugin(
         password_reset_handler_config=PasswordResetHandlerConfig(),
         register_handler_config=RegisterHandlerConfig(),
         role_management_handler_config=RoleManagementHandlerConfig(
-            guards=[roles_accepted("administrator")]
+            # guards=[roles_accepted("admin")]
         ),
         user_management_handler_config=UserManagementHandlerConfig(
-            guards=[roles_required("administrator")]
+            # guards=[roles_required("admin")]
         ),
         verification_handler_config=VerificationHandlerConfig(),
         auto_commit_transactions=True,

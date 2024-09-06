@@ -1,3 +1,4 @@
 litestar[standard,sqlalchemy,jwt]
 sqlalchemy[aiosqlite]
 litestar-users
+aiosmtplib
