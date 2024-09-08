@@ -2,10 +2,12 @@ from dataclasses import dataclass
 
 from .role import Role
 
+from litestar_users.adapter.sqlalchemy.mixins import SQLAlchemyUserMixin
+
 from litestar.contrib.sqlalchemy.base import UUIDBase
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO, SQLAlchemyDTOConfig
-from litestar_users.adapter.sqlalchemy.mixins import SQLAlchemyUserMixin
 from litestar.dto import DataclassDTO
+
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String
 
@@ -13,10 +15,7 @@ from sqlalchemy import String
 class User(UUIDBase, SQLAlchemyUserMixin):
     name: Mapped[str] = mapped_column(String(20))
     nexus_username: Mapped[str] = mapped_column(String(20))
-
-    roles: Mapped[list[Role]] = relationship(
-        Role, secondary="user_role", lazy="selectin"
-    )
+    roles: Mapped[list[Role]] = relationship(secondary="user_role", lazy="selectin")
 
 
 @dataclass
