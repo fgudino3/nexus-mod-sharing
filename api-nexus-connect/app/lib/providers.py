@@ -1,4 +1,5 @@
 from app.models.mod import ModRepository
+from app.models.mod_profile import ModProfileRepository
 
 from litestar.params import Parameter
 from litestar.repository.filters import LimitOffset
@@ -7,6 +8,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 async def provide_mods_repo(db_session: AsyncSession) -> ModRepository:
     return ModRepository(session=db_session, auto_commit=True)
+
+
+async def provide_mod_profile_repo(db_session: AsyncSession) -> ModProfileRepository:
+    return ModProfileRepository(session=db_session, auto_commit=True)
 
 
 async def provide_limit_offset_pagination(
