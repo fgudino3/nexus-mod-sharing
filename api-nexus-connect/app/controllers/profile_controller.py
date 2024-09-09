@@ -1,11 +1,11 @@
-from app.lib.providers import provide_mod_profile_repo, provide_mods_repo
+from app.lib.providers import provide_profile_repo, provide_mods_repo
 from app.lib.types import AuthRequest
 from app.models.mod import ModRepository
 from app.models.mod_profile import (
     Profile,
     ProfileReadDTO,
     ProfileUpdateDTO,
-    ModProfileRepository,
+    ProfileRepository,
 )
 
 from litestar import Controller, get, post
@@ -19,14 +19,14 @@ class ModProfileController(Controller):
     return_dto = ProfileReadDTO
     path = "/profiles"
     dependencies = {
-        "profile_repo": Provide(provide_mod_profile_repo),
+        "profile_repo": Provide(provide_profile_repo),
         "mod_repo": Provide(provide_mods_repo),
     }
 
     @get()
     async def get_profiles(
         self,
-        profile_repo: ModProfileRepository,
+        profile_repo: ProfileRepository,
         limit_offset: LimitOffset,
         request: AuthRequest,
     ) -> OffsetPagination[Profile]:
@@ -42,7 +42,7 @@ class ModProfileController(Controller):
     @post()
     async def create_profile(
         self,
-        profile_repo: ModProfileRepository,
+        profile_repo: ProfileRepository,
         mod_repo: ModRepository,
         data: Profile,
         request: AuthRequest,

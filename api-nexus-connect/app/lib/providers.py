@@ -1,5 +1,5 @@
 from app.models.mod import ModRepository
-from app.models.mod_profile import ModProfileRepository
+from app.models.mod_profile import ProfileRepository
 
 from litestar.params import Parameter
 from litestar.repository.filters import LimitOffset
@@ -10,8 +10,8 @@ async def provide_mods_repo(db_session: AsyncSession) -> ModRepository:
     return ModRepository(session=db_session, auto_commit=True)
 
 
-async def provide_mod_profile_repo(db_session: AsyncSession) -> ModProfileRepository:
-    return ModProfileRepository(session=db_session, auto_commit=True)
+async def provide_profile_repo(db_session: AsyncSession) -> ProfileRepository:
+    return ProfileRepository(session=db_session, auto_commit=True)
 
 
 async def provide_limit_offset_pagination(

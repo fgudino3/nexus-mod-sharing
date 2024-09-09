@@ -1,12 +1,19 @@
 from uuid import UUID
 
+from app.lib.association_base import AssociationBase
 from .mod import Mod
 
-from litestar.contrib.sqlalchemy.base import UUIDAuditBase, UUIDBase
+from litestar.contrib.sqlalchemy.base import UUIDAuditBase
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO, SQLAlchemyDTOConfig
 from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository
-from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
-from sqlalchemy import String, ForeignKey, Uuid, BigInteger
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import String, ForeignKey
+
+
+class ModProfile(AssociationBase):
+    profile_id: Mapped[UUID] = mapped_column(ForeignKey("profile.id"), primary_key=True)
+    mod_id: Mapped[int] = mapped_column(ForeignKey("mod.id"), primary_key=True)
+    # version: Mapped[str] = mapped_column(String(20))
 
 
 class Profile(UUIDAuditBase):
@@ -20,22 +27,7 @@ class Profile(UUIDAuditBase):
     )
 
 
-class Base(DeclarativeBase):
-    pass
-
-
-class ModProfile(UUIDBase):
-    # __tablename__ = "mod_profile"
-    profile_id: Mapped[UUID] = mapped_column(
-        Uuid(), ForeignKey("profile.id"), primary_key=True
-    )
-    mod_id: Mapped[int] = mapped_column(
-        BigInteger(), ForeignKey("mod.id"), primary_key=True
-    )
-    # version: Mapped[str] = mapped_column(String(20))
-
-
-class ModProfileRepository(SQLAlchemyAsyncRepository[Profile]):
+class ProfileRepository(SQLAlchemyAsyncRepository[Profile]):
     model_type = Profile
 
 
