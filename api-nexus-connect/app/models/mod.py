@@ -2,7 +2,7 @@ from litestar.contrib.sqlalchemy.base import BigIntAuditBase
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO, SQLAlchemyDTOConfig
 from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import String, Boolean
+from sqlalchemy import String
 
 
 class Mod(BigIntAuditBase):
@@ -11,10 +11,6 @@ class Mod(BigIntAuditBase):
     author: Mapped[str] = mapped_column(String(128))
     page_url: Mapped[str] = mapped_column(String(128))
     image_url: Mapped[str] = mapped_column(String(128))
-    version: Mapped[str] = mapped_column(String(20))
-    order: Mapped[str] = mapped_column(String(4))
-    intalled: Mapped[bool] = mapped_column(Boolean())
-    isPatched: Mapped[bool] = mapped_column(Boolean())
 
 
 class ModRepository(SQLAlchemyAsyncRepository[Mod]):

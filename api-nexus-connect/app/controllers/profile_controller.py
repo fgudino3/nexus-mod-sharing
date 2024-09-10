@@ -1,11 +1,15 @@
-from app.lib.providers import provide_profile_repo, provide_mods_repo
+from uuid import UUID
+
+from app.lib.providers import provide_profile_repo, provide_profile_only_repo
 from app.lib.types import AuthRequest
-from app.models.mod import ModRepository
 from app.models.mod_profile import (
     Profile,
+    ProfilePage,
     ProfileReadDTO,
     ProfileUpdateDTO,
     ProfileRepository,
+    ProfilePageReadDTO,
+    profile_to_profile_page,
 )
 
 from litestar import Controller, get, post
@@ -20,10 +24,9 @@ class ModProfileController(Controller):
     path = "/profiles"
     dependencies = {
         "profile_repo": Provide(provide_profile_repo),
-        "mod_repo": Provide(provide_mods_repo),
     }
 
-    @get()
+    @get(dependencies={"profile_repo": Provide(provide_profile_only_repo)})
     async def get_profiles(
         self,
         profile_repo: ProfileRepository,
@@ -39,21 +42,26 @@ class ModProfileController(Controller):
             offset=limit_offset.offset,
         )
 
+    @get("/{profile_id:uuid}", return_dto=ProfilePageReadDTO)
+    async def get_profile_and_mods(
+        self,
+        profile_repo: ProfileRepository,
+        profile_id: UUID,
+        request: AuthRequest,
+    ) -> ProfilePage:
+        profile = await profile_repo.get(profile_id)
+
+        profile_page = profile_to_profile_page(profile)
+
+        return profile_page
+
     @post()
     async def create_profile(
         self,
         profile_repo: ProfileRepository,
-        mod_repo: ModRepository,
         data: Profile,
         request: AuthRequest,
-        mod_ids: list[int],
     ) -> Profile:
-        mod_list = []
-
-        for mod_id in mod_ids:
-            mod_list.append(await mod_repo.get(mod_id))
-
-        data.mods.extend(mod_list)
         profile = await profile_repo.add(data)
 
         return profile
