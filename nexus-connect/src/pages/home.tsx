@@ -11,6 +11,9 @@ export default function Home() {
         <NexusButton onClick={() => navigate('/reader')}>
           Import Mod List
         </NexusButton>
+        <NexusButton onClick={() => navigate('/login-nexus')}>
+          Login Nexus
+        </NexusButton>
         <NexusButton onClick={() => navigate('/login')}>Login</NexusButton>
       </div>
     </div>

@@ -1,17 +1,28 @@
+import User from '@/interfaces/User';
 import { Store } from 'tauri-plugin-store-api';
 import { create } from 'zustand';
 
 interface UserState {
-  nexusApiKey: string;
   store: Store;
+  userJwt: string;
+  user: User | null;
+  nexusApiKey: string;
+  saveJwt: (jwt: string) => Promise<void>;
+  saveUser: (user: User) => Promise<void>;
+  loadJwt: () => Promise<void>;
+  loadUser: () => Promise<void>;
   saveNexusApiKey: (apiKey: string) => Promise<void>;
   getNexusApiKey: () => Promise<void>;
 }
 
 const NEXUS_API_KEY = 'NEXUS_API_KEY';
+const USER_JWT = 'USER_JWT';
+const USER_DATA = 'USER_DATA';
 
 export const useUserState = create<UserState>()((set, get) => ({
   nexusApiKey: '',
+  userJwt: '',
+  user: null,
   store: new Store('.settings.dat'),
   async saveNexusApiKey(apiKey: string) {
     const store = get().store;
@@ -28,6 +39,40 @@ export const useUserState = create<UserState>()((set, get) => ({
 
     if (nexusApiKey) {
       set({ nexusApiKey });
+    }
+  },
+  async saveJwt(jwt: string) {
+    const store = get().store;
+
+    await store.set(USER_JWT, jwt);
+
+    await store.save();
+
+    set({ userJwt: jwt });
+  },
+  async loadJwt() {
+    const store = get().store;
+    const userJwt = await store.get<string>(USER_JWT);
+
+    if (userJwt) {
+      set({ userJwt });
+    }
+  },
+  async saveUser(user: User) {
+    const store = get().store;
+
+    await store.set(USER_DATA, user);
+
+    await store.save();
+
+    set({ user });
+  },
+  async loadUser() {
+    const store = get().store;
+    const user = await store.get<User>(USER_DATA);
+
+    if (user) {
+      set({ user });
     }
   },
 }));
