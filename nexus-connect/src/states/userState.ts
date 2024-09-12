@@ -7,12 +7,10 @@ interface UserState {
   userJwt: string;
   user: User | null;
   nexusApiKey: string;
+  loadUserData: () => Promise<void>;
   saveJwt: (jwt: string) => Promise<void>;
   saveUser: (user: User) => Promise<void>;
-  loadJwt: () => Promise<void>;
-  loadUser: () => Promise<void>;
   saveNexusApiKey: (apiKey: string) => Promise<void>;
-  getNexusApiKey: () => Promise<void>;
 }
 
 const NEXUS_API_KEY = 'NEXUS_API_KEY';
@@ -33,14 +31,6 @@ export const useUserState = create<UserState>()((set, get) => ({
 
     set({ nexusApiKey: apiKey });
   },
-  async getNexusApiKey() {
-    const store = get().store;
-    const nexusApiKey = await store.get<string>(NEXUS_API_KEY);
-
-    if (nexusApiKey) {
-      set({ nexusApiKey });
-    }
-  },
   async saveJwt(jwt: string) {
     const store = get().store;
 
@@ -49,14 +39,6 @@ export const useUserState = create<UserState>()((set, get) => ({
     await store.save();
 
     set({ userJwt: jwt });
-  },
-  async loadJwt() {
-    const store = get().store;
-    const userJwt = await store.get<string>(USER_JWT);
-
-    if (userJwt) {
-      set({ userJwt });
-    }
   },
   async saveUser(user: User) {
     const store = get().store;
@@ -67,8 +49,21 @@ export const useUserState = create<UserState>()((set, get) => ({
 
     set({ user });
   },
-  async loadUser() {
+  async loadUserData() {
     const store = get().store;
+
+    const nexusApiKey = await store.get<string>(NEXUS_API_KEY);
+
+    if (nexusApiKey) {
+      set({ nexusApiKey });
+    }
+
+    const userJwt = await store.get<string>(USER_JWT);
+
+    if (userJwt) {
+      set({ userJwt });
+    }
+
     const user = await store.get<User>(USER_DATA);
 
     if (user) {

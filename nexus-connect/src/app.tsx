@@ -5,10 +5,10 @@ import { useUserState } from './states/userState';
 import { useEffect } from 'react';
 
 export default function App() {
-  const getNexusApiKey = useUserState((state) => state.getNexusApiKey);
+  const loadUserData = useUserState((state) => state.loadUserData);
 
   useEffect(() => {
-    getNexusApiKey();
+    loadUserData();
   }, []);
 
   return (
