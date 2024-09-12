@@ -1,11 +1,14 @@
 import MdiExternalLink from '~icons/mdi/external-link';
 import { useModState } from '@/states/modState';
 import { useParams, useLocation } from 'react-router-dom';
+import { fetch, Body } from '@tauri-apps/api/http';
 import { shell } from '@tauri-apps/api';
 import Mod from '@/interfaces/Mod';
 import { useEffect, useState } from 'react';
 import { useUserState } from '@/states/userState';
 import { emit, listen, UnlistenFn } from '@tauri-apps/api/event';
+import { NexusButton } from '@/components/NexusButton';
+import Profile from '@/interfaces/Profile';
 
 export default function ModList() {
   const { gameName } = useParams();
@@ -71,11 +74,79 @@ export default function ModList() {
   }
 
   return (
-    <div className="grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 p-4">
-      {modList.map((mod) => (
-        <ModCard mod={mod} key={mod.id} />
-      ))}
-    </div>
+    <>
+      <ProfileForm modList={modList} />
+      <div className="grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 p-4">
+        {modList.map((mod) => (
+          <ModCard mod={mod} key={mod.id} />
+        ))}
+      </div>
+    </>
+  );
+}
+
+function ProfileForm({ modList }: { modList: Mod[] }) {
+  const jwt = useUserState((state) => state.userJwt);
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+
+  async function createProfile() {
+    await createMods();
+
+    const { ok } = await fetch<Profile>('http://127.0.0.1:8000/profiles', {
+      method: 'POST',
+      body: Body.json({
+        name,
+        description,
+        mods: modList.map((mod) => ({
+          modId: mod.id,
+          version: mod.version,
+          order: mod.order,
+          installed: mod.installed,
+          isPatched: mod.isPatched,
+        })),
+      }),
+      headers: {
+        authorization: 'Bearer ' + jwt,
+      },
+    });
+  }
+
+  async function createMods() {
+    for (const mod of modList) {
+      await fetch<Profile>('http://127.0.0.1:8000/mods', {
+        method: 'POST',
+        body: Body.json({
+          id: mod.id,
+          name: mod.name,
+          description: mod.description,
+          author: mod.author,
+          pageUrl: mod.pageUrl,
+          imageUrl: mod.imageUrl,
+        }),
+        headers: {
+          authorization: 'Bearer ' + jwt,
+        },
+      });
+    }
+  }
+
+  return (
+    <>
+      <input
+        type="text"
+        onChange={(e) => setName(e.currentTarget.value)}
+        placeholder="Profile name"
+        className="bg-gray-700 outline-none rounded-md mt-10 text-lg px-4 py-2"
+      />
+      <input
+        type="text"
+        onChange={(e) => setDescription(e.currentTarget.value)}
+        placeholder="description"
+        className="bg-gray-700 outline-none rounded-md mt-10 text-lg px-4 py-2"
+      />
+      <NexusButton onClick={createProfile}>Create Profile</NexusButton>
+    </>
   );
 }
 

@@ -62,6 +62,8 @@ class ModProfileController(Controller):
         data: Profile,
         request: AuthRequest,
     ) -> Profile:
+        data.user_id = request.user.id
+
         profile = await profile_repo.add(data)
 
         return profile

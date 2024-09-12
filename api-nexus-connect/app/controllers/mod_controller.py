@@ -11,6 +11,7 @@ from litestar import Controller, get, post
 from litestar.di import Provide
 from litestar.pagination import OffsetPagination
 from litestar.repository.filters import LimitOffset
+from advanced_alchemy.exceptions import NotFoundError
 
 
 class ModController(Controller):
@@ -37,9 +38,13 @@ class ModController(Controller):
         )
 
     @post()
-    async def create_mod(
+    async def get_or_create_mod(
         self, mods_repo: ModRepository, data: Mod, request: AuthRequest
     ) -> Mod:
-        mod = await mods_repo.add(data)
+        try:
+            mod = await mods_repo.get(data.id)
 
-        return mod
+            return mod
+        except NotFoundError:
+            mod = await mods_repo.add(data)
+            return mod

@@ -47,7 +47,7 @@ class ProfileUpdateDTO(SQLAlchemyDTO[Profile]):
     config = SQLAlchemyDTOConfig(
         partial=True,
         rename_strategy="camel",
-        exclude={"created_at", "updated_at"},
+        exclude={"created_at", "updated_at", "user_id"},
     )
 
 
