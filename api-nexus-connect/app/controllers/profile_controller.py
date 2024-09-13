@@ -1,6 +1,8 @@
 from uuid import UUID
 
-from app.lib.providers import provide_profile_repo, provide_profile_only_repo
+from typing import Optional
+
+from app.lib.providers import provide_profile_repo
 from app.lib.types import AuthRequest
 from app.models.mod_profile import (
     Profile,
@@ -16,6 +18,8 @@ from litestar import Controller, get, post
 from litestar.di import Provide
 from litestar.pagination import OffsetPagination
 from litestar.repository.filters import LimitOffset
+from sqlalchemy.orm import noload
+from sqlalchemy import select
 
 
 class ModProfileController(Controller):
@@ -26,14 +30,48 @@ class ModProfileController(Controller):
         "profile_repo": Provide(provide_profile_repo),
     }
 
-    @get(dependencies={"profile_repo": Provide(provide_profile_only_repo)})
+    @get()
     async def get_profiles(
         self,
         profile_repo: ProfileRepository,
         limit_offset: LimitOffset,
         request: AuthRequest,
+        user_id: Optional[UUID],
     ) -> OffsetPagination[Profile]:
-        results, total = await profile_repo.list_and_count(limit_offset)
+        statement = select(Profile).options(noload(Profile.mods))
+
+        if user_id:
+            statement = statement.where(Profile.user_id == user_id)
+
+        results, total = await profile_repo.list_and_count(
+            limit_offset,
+            statement=statement,
+        )
+
+        return OffsetPagination[Profile](
+            items=results,
+            total=total,
+            limit=limit_offset.limit,
+            offset=limit_offset.offset,
+        )
+
+    @get("/me")
+    async def get_my_profiles(
+        self,
+        profile_repo: ProfileRepository,
+        limit_offset: LimitOffset,
+        request: AuthRequest,
+    ) -> OffsetPagination[Profile]:
+        statement = (
+            select(Profile)
+            .options(noload(Profile.mods))
+            .where(Profile.user_id == request.user.id)
+        )
+
+        results, total = await profile_repo.list_and_count(
+            limit_offset,
+            statement=statement,
+        )
 
         return OffsetPagination[Profile](
             items=results,

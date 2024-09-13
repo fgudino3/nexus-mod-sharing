@@ -4,7 +4,7 @@ import Register from '@/pages/user/register';
 import NexusLogin from '@/pages/user/nexusLogin';
 import { RouteObject } from 'react-router-dom';
 
-export const LOGIN_ROUTES: RouteObject[] = [
+export const USER_ROUTES: RouteObject[] = [
   {
     path: '/login',
     element: <Login />,

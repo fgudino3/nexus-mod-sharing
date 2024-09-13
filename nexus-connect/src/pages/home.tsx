@@ -30,6 +30,9 @@ export default function Home() {
           Login Nexus
         </NexusButton>
         <NexusButton onClick={() => navigate('/login')}>Login</NexusButton>
+        <NexusButton onClick={() => navigate('/profiles/me')}>
+          Profiles
+        </NexusButton>
       </div>
     </div>
   );
