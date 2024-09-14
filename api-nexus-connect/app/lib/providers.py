@@ -1,15 +1,14 @@
+from app.models.manual_mod import ManualModRepository
+from app.models.mod_profile import ProfileRepository
 from app.models.mod import ModRepository
-from app.models.mod_profile import ProfileRepository, Profile
 
-from litestar.params import Parameter
 from litestar.repository.filters import LimitOffset
+from litestar.params import Parameter
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import noload
-from sqlalchemy import select
 
 
-async def provide_mods_repo(db_session: AsyncSession) -> ModRepository:
+async def provide_mod_repo(db_session: AsyncSession) -> ModRepository:
     return ModRepository(session=db_session, auto_commit=True)
 
 
@@ -20,11 +19,10 @@ async def provide_profile_repo(db_session: AsyncSession) -> ProfileRepository:
     )
 
 
-async def provide_profile_only_repo(db_session: AsyncSession) -> ProfileRepository:
-    return ProfileRepository(
+async def provide_manual_mod_repo(db_session: AsyncSession) -> ManualModRepository:
+    return ManualModRepository(
         session=db_session,
         auto_commit=True,
-        statement=select(Profile).options(noload(Profile.mods)),
     )
 
 

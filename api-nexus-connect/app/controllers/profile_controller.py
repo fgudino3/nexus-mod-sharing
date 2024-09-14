@@ -38,7 +38,9 @@ class ModProfileController(Controller):
         request: AuthRequest,
         user_id: Optional[UUID],
     ) -> OffsetPagination[Profile]:
-        statement = select(Profile).options(noload(Profile.mods))
+        statement = select(Profile).options(
+            noload(Profile.mods), noload(Profile.manual_mods)
+        )
 
         if user_id:
             statement = statement.where(Profile.user_id == user_id)
@@ -64,7 +66,7 @@ class ModProfileController(Controller):
     ) -> OffsetPagination[Profile]:
         statement = (
             select(Profile)
-            .options(noload(Profile.mods))
+            .options(noload(Profile.mods), noload(Profile.manual_mods))
             .where(Profile.user_id == request.user.id)
         )
 
@@ -101,6 +103,11 @@ class ModProfileController(Controller):
         request: AuthRequest,
     ) -> Profile:
         data.user_id = request.user.id
+
+        for manual_mod in data.manual_mods:
+            manual_mod.user_id = request.user.id
+
+        data.mod_count = len(data.mods) + len(data.manual_mods)
 
         profile = await profile_repo.add(data)
 
