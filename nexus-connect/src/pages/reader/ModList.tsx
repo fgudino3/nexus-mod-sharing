@@ -96,14 +96,23 @@ function ProfileForm({ modList }: { modList: Mod[] }) {
       method: 'POST',
       body: Body.json({
         name,
+        game: 'Fallout New Vegas', // TODO: figure out how to get game name
         description,
-        mods: modList.map((mod) => ({
-          modId: mod.id,
-          version: mod.version,
-          order: mod.order,
-          installed: mod.installed,
-          isPatched: mod.isPatched,
-        })),
+        mods: modList
+          .filter((mod) => mod.id !== undefined)
+          .map((mod) => ({
+            modId: mod.id,
+            version: mod.version,
+            order: mod.order,
+            installed: mod.installed,
+            isPatched: mod.isPatched,
+          })),
+        manualMods: modList
+          .filter((mod) => mod.id === undefined)
+          .map((mod) => ({
+            modName: mod.name,
+            order: mod.order,
+          })),
       }),
       headers: {
         authorization: 'Bearer ' + jwt,
@@ -113,20 +122,35 @@ function ProfileForm({ modList }: { modList: Mod[] }) {
 
   async function createMods() {
     for (const mod of modList) {
-      await fetch<Profile>('http://127.0.0.1:8000/mods', {
-        method: 'POST',
-        body: Body.json({
-          id: mod.id,
-          name: mod.name,
-          description: mod.description,
-          author: mod.author,
-          pageUrl: mod.pageUrl,
-          imageUrl: mod.imageUrl,
-        }),
-        headers: {
-          authorization: 'Bearer ' + jwt,
-        },
-      });
+      if (mod.id) {
+        await fetch<Profile>('http://127.0.0.1:8000/mods', {
+          method: 'POST',
+          body: Body.json({
+            id: mod.id,
+            name: mod.name,
+            description: mod.description,
+            author: mod.author,
+            pageUrl: mod.pageUrl,
+            imageUrl: mod.imageUrl,
+          }),
+          headers: {
+            authorization: 'Bearer ' + jwt,
+          },
+        });
+      } else {
+        await fetch<Profile>('http://127.0.0.1:8000/mods/manual', {
+          method: 'POST',
+          body: Body.json({
+            name: mod.name,
+            description: mod.description,
+            author: mod.author,
+            pageUrl: mod.pageUrl,
+          }),
+          headers: {
+            authorization: 'Bearer ' + jwt,
+          },
+        });
+      }
     }
   }
 

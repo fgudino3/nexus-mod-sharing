@@ -87,7 +87,7 @@ export default function Register() {
               placeholder="Nexus API Key"
               className="bg-gray-700 outline-none rounded-md mt-10 text-lg px-4 py-2"
             />
-            <NexusButton onClick={verifyApiKey}>Verify</NexusButton>
+            <NexusButton onClick={() => verifyApiKey()}>Verify</NexusButton>
           </div>
         )}
         <input

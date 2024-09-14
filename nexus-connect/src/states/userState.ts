@@ -11,6 +11,7 @@ interface UserState {
   saveJwt: (jwt: string) => Promise<void>;
   saveUser: (user: User) => Promise<void>;
   saveNexusApiKey: (apiKey: string) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const NEXUS_API_KEY = 'NEXUS_API_KEY';
@@ -69,5 +70,13 @@ export const useUserState = create<UserState>()((set, get) => ({
     if (user) {
       set({ user });
     }
+  },
+  async logout() {
+    const store = get().store;
+
+    await store.delete(USER_JWT);
+    await store.delete(USER_DATA);
+
+    set({ userJwt: '', user: null });
   },
 }));

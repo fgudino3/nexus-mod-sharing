@@ -1,11 +1,12 @@
 import { NexusButton } from '@/components/NexusButton';
 import { useUserState } from '@/states/userState';
 import { fetch, Body } from '@tauri-apps/api/http';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import User from '@/interfaces/User';
 import { useState } from 'react';
 
 export default function Login() {
+  const navigate = useNavigate();
   const saveUser = useUserState((state) => state.saveUser);
   const saveJwt = useUserState((state) => state.saveJwt);
   const userJwt = useUserState((state) => state.userJwt);
@@ -34,6 +35,8 @@ export default function Login() {
     const jwt = headers.authorization.split(' ')[1];
 
     saveJwt(jwt);
+
+    navigate('/');
   }
 
   return (

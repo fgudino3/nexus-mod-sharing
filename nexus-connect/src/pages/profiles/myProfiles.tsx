@@ -22,6 +22,7 @@ export default function MyProfiles() {
     );
 
     if (ok) {
+      console.log(data.items);
       setProfiles(() => data.items);
     }
   }
@@ -32,16 +33,23 @@ export default function MyProfiles() {
 
   return (
     <div className="pt-10">
-      {profiles.map((profile) => (
-        <button
-          key={profile.id}
-          onClick={() => navigate('/profiles/' + profile.id)}
-          className="border p-5 rounded-md"
-        >
-          <p>{profile.name}</p>
-          <p>{profile.description}</p>
-        </button>
-      ))}
+      <h1 className="text-3xl font-bold mb-10">My Profiles</h1>
+      <div className="grid grid-cols-3 gap-6">
+        {profiles.map((profile) => (
+          <button
+            key={profile.id}
+            onClick={() => navigate('/profiles/' + profile.id)}
+            className="border p-5 rounded-md"
+          >
+            <p className="font-bold">{profile.name}</p>
+            <p className="text-sm mt-3">Game: {profile.game}</p>
+            <p className="text-sm mt-2">
+              Installed Mods: <span>{profile.modCount}</span>
+            </p>
+            <p className="mt-2 text-sm">{profile.description}</p>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
