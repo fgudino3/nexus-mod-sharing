@@ -1,4 +1,7 @@
 from dataclasses import dataclass
+from uuid import UUID
+
+from app.lib.association_base import AssociationBase
 
 from .role import Role
 
@@ -10,13 +13,29 @@ from litestar.dto.config import DTOConfig
 from litestar.dto import DataclassDTO
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String
+from sqlalchemy import ForeignKey, String
+
+
+class FriendRequests(AssociationBase):
+    from_id: Mapped[UUID] = mapped_column(ForeignKey("user.id"), primary_key=True)
+    to_id: Mapped[UUID] = mapped_column(ForeignKey("user.id"), primary_key=True)
+
+
+class Friendship(AssociationBase):
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("user.id"), primary_key=True)
+    friend_id: Mapped[UUID] = mapped_column(ForeignKey("user.id"), primary_key=True)
 
 
 class User(UUIDBase, SQLAlchemyUserMixin):
     nexus_username: Mapped[str] = mapped_column(String(20))
     nexus_profile_url: Mapped[str] = mapped_column(String(128))
     roles: Mapped[list[Role]] = relationship(secondary="user_role", lazy="selectin")
+    friends: Mapped[list["User"]] = relationship(
+        secondary="friendship",
+        lazy="immediate",
+        primaryjoin="User.id==Friendship.user_id",
+        secondaryjoin="User.id==Friendship.friend_id",
+    )
 
 
 @dataclass
