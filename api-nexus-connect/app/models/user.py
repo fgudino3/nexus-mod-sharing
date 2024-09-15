@@ -32,7 +32,7 @@ class User(UUIDBase, SQLAlchemyUserMixin):
     roles: Mapped[list[Role]] = relationship(secondary="user_role", lazy="selectin")
     friends: Mapped[list["User"]] = relationship(
         secondary="friendship",
-        lazy="immediate",
+        lazy="noload",
         primaryjoin="User.id==Friendship.user_id",
         secondaryjoin="User.id==Friendship.friend_id",
     )

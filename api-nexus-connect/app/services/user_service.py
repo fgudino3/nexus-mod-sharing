@@ -7,8 +7,30 @@ from litestar import Request
 
 from litestar_users.service import BaseUserService
 
+from sqlalchemy.orm import immediateload
+from sqlalchemy import select
+
 
 class UserService(BaseUserService[User, Role]):  # type: ignore[type-var]
+    async def authenticate(
+        self, data: Any, request: Request | None = None
+    ) -> User | None:
+        preFriendsUser = await super().authenticate(data, request)
+
+        if not preFriendsUser:
+            return None
+
+        user_id = preFriendsUser.id
+
+        self.user_repository.session.expunge(preFriendsUser)
+
+        user = await self.user_repository.get(
+            user_id,
+            statement=select(User).options(immediateload(User.friends)),
+        )
+
+        return user
+
     async def register(
         self, data: dict[str, Any], request: Request | None = None
     ) -> User:
