@@ -26,7 +26,9 @@ class UserService(BaseUserService[User, Role]):  # type: ignore[type-var]
 
         user = await self.user_repository.get(
             user_id,
-            statement=select(User).options(immediateload(User.friends)),
+            statement=select(User).options(
+                immediateload(User.following), immediateload(User.followers)
+            ),
         )
 
         return user
