@@ -1,17 +1,45 @@
 from typing import Any
+from uuid import UUID
 
 from app.models.user import User
 from app.models.role import Role
 
 from litestar import Request
+from litestar.exceptions.http_exceptions import ClientException
 
 from litestar_users.service import BaseUserService
 
 from sqlalchemy.orm import immediateload
-from sqlalchemy import select
+from advanced_alchemy.exceptions import NotFoundError
 
 
 class UserService(BaseUserService[User, Role]):  # type: ignore[type-var]
+    followLoaders = [immediateload(User.following), immediateload(User.followers)]
+
+    async def follow(self, user: User, user_to_follow_id: UUID) -> User:
+        user_id = user.id
+
+        self.user_repository.session.expunge(user)
+
+        user = await self.user_repository.get(
+            user_id,
+            load=self.followLoaders,
+        )
+
+        try:
+            user_to_follow = await self.user_repository.get(user_to_follow_id)
+        except NotFoundError:
+            raise ClientException("This user does not exist")
+
+        if user_to_follow in user.following:
+            raise ClientException("You are already following this user")
+
+        user.following.append(user_to_follow)
+
+        await self.user_repository.session.commit()
+
+        return user
+
     async def authenticate(
         self, data: Any, request: Request | None = None
     ) -> User | None:
@@ -26,9 +54,7 @@ class UserService(BaseUserService[User, Role]):  # type: ignore[type-var]
 
         user = await self.user_repository.get(
             user_id,
-            statement=select(User).options(
-                immediateload(User.following), immediateload(User.followers)
-            ),
+            load=self.followLoaders,
         )
 
         return user

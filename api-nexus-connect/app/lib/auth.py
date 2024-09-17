@@ -18,7 +18,7 @@ from app.models.role import (
 from litestar.security.jwt import JWTAuth, Token
 
 from litestar_users import LitestarUsersConfig, LitestarUsersPlugin
-from litestar_users.guards import roles_accepted, roles_required
+from litestar_users.guards import roles_accepted
 from litestar_users.config import (
     AuthHandlerConfig,
     CurrentUserHandlerConfig,
@@ -56,9 +56,7 @@ litestar_users = LitestarUsersPlugin(
         role_management_handler_config=RoleManagementHandlerConfig(
             guards=[roles_accepted("admin")]
         ),
-        user_management_handler_config=UserManagementHandlerConfig(
-            guards=[roles_required("admin")]
-        ),
+        user_management_handler_config=UserManagementHandlerConfig(),
         verification_handler_config=VerificationHandlerConfig(),
         auto_commit_transactions=True,
         default_token_expiration=timedelta(weeks=52),

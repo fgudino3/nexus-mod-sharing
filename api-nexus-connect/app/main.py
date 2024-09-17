@@ -1,3 +1,4 @@
+from app.controllers.user_controller import UserController
 from .controllers.mod_controller import ModController
 from .controllers.profile_controller import ModProfileController
 from .lib.providers import provide_limit_offset_pagination
@@ -30,7 +31,7 @@ async def on_startup() -> None:
 
 app = Litestar(
     on_startup=[on_startup],
-    route_handlers=[ModController, ModProfileController],
+    route_handlers=[UserController, ModController, ModProfileController],
     plugins=[SQLAlchemyInitPlugin(config=sqlalchemy_config), litestar_users],
     dependencies={"limit_offset": Provide(provide_limit_offset_pagination)},
     listeners=[send_verify_token_email_handler],

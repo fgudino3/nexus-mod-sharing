@@ -55,7 +55,20 @@ class UserRegistrationDTO(DataclassDTO[UserRegistrationSchema]):
 
 class UserReadDTO(SQLAlchemyDTO[User]):
     config = SQLAlchemyDTOConfig(
-        rename_strategy="camel", exclude={"password_hash", "is_active", "is_verified"}
+        rename_strategy="camel",
+        exclude={
+            "password_hash",
+            "is_active",
+            "is_verified",
+            "following.0.password_hash",
+            "following.0.email",
+            "following.0.is_active",
+            "following.0.is_verified",
+            "followers.0.password_hash",
+            "followers.0.email",
+            "followers.0.is_active",
+            "followers.0.is_verified",
+        },
     )
 
 
