@@ -28,3 +28,14 @@ class UserController(Controller):
         user = await user_service.follow(request.user, user_id)
 
         return user
+
+    @post("/unfollow/{user_id:uuid}")
+    async def unfollow_user(
+        self,
+        user_service: UserService,
+        user_id: UUID,
+        request: AuthRequest,
+    ) -> User:
+        user = await user_service.unfollow(request.user, user_id)
+
+        return user

@@ -40,6 +40,30 @@ class UserService(BaseUserService[User, Role]):  # type: ignore[type-var]
 
         return user
 
+    async def unfollow(self, user: User, user_to_unfollow_id: UUID) -> User:
+        user_id = user.id
+
+        self.user_repository.session.expunge(user)
+
+        user = await self.user_repository.get(
+            user_id,
+            load=self.followLoaders,
+        )
+
+        try:
+            user_to_unfollow = await self.user_repository.get(user_to_unfollow_id)
+        except NotFoundError:
+            raise ClientException("This user does not exist")
+
+        if user_to_unfollow not in user.following:
+            raise ClientException("You are already are not following this user")
+
+        user.following.remove(user_to_unfollow)
+
+        await self.user_repository.session.commit()
+
+        return user
+
     async def authenticate(
         self, data: Any, request: Request | None = None
     ) -> User | None:
