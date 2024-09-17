@@ -18,7 +18,6 @@ from litestar.di import Provide
 from litestar.pagination import OffsetPagination
 from litestar.repository.filters import LimitOffset
 from advanced_alchemy.exceptions import NotFoundError
-from sqlalchemy import select
 
 
 class ModController(Controller):
@@ -67,11 +66,7 @@ class ModController(Controller):
         request: AuthRequest,
     ) -> ManualMod:
         try:
-            mod = await manual_mod_repo.get_one(
-                statement=select(ManualMod).where(
-                    ManualMod.name == data.name and ManualMod.user_id == request.user.id
-                )
-            )
+            mod = await manual_mod_repo.get_one(name=data.name, user_id=request.user.id)
 
             return mod
         except NotFoundError:
