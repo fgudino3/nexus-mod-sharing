@@ -37,26 +37,14 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="pt-10">
-      <div>
-        <div className="flex justify-between">
-          <h1>Name: {profile.name}</h1>
-          <div className="flex items-center space-x-2">
-            <img
-              src={profile.user.nexusProfileUrl}
-              alt="avatar"
-              className="w-9 h-9 rounded-full object-cover"
-            />
-            <p>{profile.user.nexusUsername}</p>
-          </div>
-        </div>
-        <p>Description: {profile.description}</p>
-      </div>
-      <div className="grid grid-cols-3 gap-6 mt-10">
+    <>
+      <h1>Name: {profile.name}</h1>
+      <p>Description: {profile.description}</p>
+      <div className="grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 mt-5">
         {profile.mods.map((mod) => (
           <ModCard key={mod.id} mod={mod} />
         ))}
       </div>
-    </div>
+    </>
   );
 }

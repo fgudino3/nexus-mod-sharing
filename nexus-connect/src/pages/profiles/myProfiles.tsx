@@ -32,7 +32,7 @@ export default function MyProfiles() {
   }, []);
 
   return (
-    <div className="pt-10">
+    <div>
       <h1 className="text-3xl font-bold mb-10">My Profiles</h1>
       <div className="grid grid-cols-3 gap-6">
         {profiles.map((profile) => (
