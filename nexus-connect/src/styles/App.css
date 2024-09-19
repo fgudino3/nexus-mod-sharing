@@ -22,8 +22,14 @@
   }
 }
 
+html,
 body {
+  height: 100%;
   margin: 0;
+}
+
+.simplebar-scrollbar::before {
+  background-color: #e4e4e7 !important;
 }
 
 .logo.vortex:hover {

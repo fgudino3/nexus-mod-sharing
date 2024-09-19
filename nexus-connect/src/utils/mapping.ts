@@ -1,5 +1,19 @@
 import Mod from '@/interfaces/Mod';
 import MoMod from '@/interfaces/MoMod';
+import User, { UserBase, UserDTO } from '@/interfaces/User';
+
+export function extractFromUserDTO(
+  userDTO: UserDTO
+): [user: User, following: UserBase[], followers: UserBase[]] {
+  const user: User = {
+    id: userDTO.id,
+    email: userDTO.email,
+    nexusUsername: userDTO.nexusUsername,
+    nexusProfileUrl: userDTO.nexusProfileUrl,
+  };
+
+  return [user, userDTO.following, userDTO.followers];
+}
 
 export function mapMoModsToMods(moMods: MoMod[]): Mod[] {
   const modList: Mod[] = [];

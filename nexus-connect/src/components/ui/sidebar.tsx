@@ -2,15 +2,23 @@ import { ChevronLast, ChevronFirst } from 'lucide-react';
 import React, { useContext, createContext } from 'react';
 import { Button } from './button';
 import { useSidebar } from '@/states/sidebarState';
+import { useNavigate } from 'react-router-dom';
 
 const SidebarContext = createContext<{ expanded: boolean }>({ expanded: true });
 
-export default function Sidebar({ children }: React.PropsWithChildren) {
+interface SidebarProps extends React.PropsWithChildren {
+  headerHeight: number;
+}
+
+export default function Sidebar({ children, headerHeight }: SidebarProps) {
   const expanded = useSidebar((state) => state.expanded);
   const toggleSidebar = useSidebar((state) => state.toggleSidebar);
 
   return (
-    <aside className="h-screen fixed pt-[57px]">
+    <aside
+      style={{ paddingTop: headerHeight + 'px' }}
+      className="h-screen fixed"
+    >
       <nav className="h-full flex flex-col bg-white shadow-sm dark:bg-zinc-800">
         <SidebarContext.Provider value={{ expanded }}>
           <ul className="flex-1">{children}</ul>
@@ -27,41 +35,46 @@ export default function Sidebar({ children }: React.PropsWithChildren) {
 type SidebarItemProps = {
   icon: JSX.Element;
   text: string;
+  path: string;
   active?: boolean;
-  alert?: boolean;
 };
 
-export function SidebarItem({ icon, text, active, alert }: SidebarItemProps) {
+export function SidebarItem({ icon, text, active, path }: SidebarItemProps) {
   const { expanded } = useContext(SidebarContext);
+  const navigate = useNavigate();
 
   return (
     <li
+      onClick={() => navigate(path)}
       className={`
         relative flex items-center justify-center py-2 px-3 my-1
         font-medium rounded-md cursor-pointer
         transition-colors group
         ${
           active
-            ? 'bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800'
-            : 'hover:bg-indigo-50 dark:hover:bg-background text-gray-600 dark:text-white'
+            ? 'bg-background/50'
+            : 'hover:bg-indigo-50 dark:hover:bg-background/50'
         }
     `}
     >
       {icon}
       <span
-        className={`overflow-hidden transition-all ${
+        className={`overflow-hidden text-sm transition-all ${
           expanded ? 'w-25 ml-3' : 'w-0'
         }`}
       >
         {text}
       </span>
-      {alert && (
+      <div
+        className={`absolute z-10 right-0 h-full rounded-r-md ${active ? 'border-r-6 border-orange-500' : ''}`}
+      />
+      {/* {alert && (
         <div
           className={`absolute right-2 w-2 h-2 rounded bg-indigo-400 ${
             expanded ? '' : 'top-2'
           }`}
         />
-      )}
+      )} */}
 
       {!expanded && (
         <div
@@ -75,6 +88,22 @@ export function SidebarItem({ icon, text, active, alert }: SidebarItemProps) {
           {text}
         </div>
       )}
+    </li>
+  );
+}
+
+export function SidebarHeader({ children }: React.PropsWithChildren) {
+  const { expanded } = useContext(SidebarContext);
+
+  return (
+    <li className="text-center">
+      <span
+        className={`overflow-hidden text-sm opacity-50 transition-all ${
+          expanded ? 'w-25' : 'w-0 hidden'
+        }`}
+      >
+        {children}
+      </span>
     </li>
   );
 }

@@ -26,6 +26,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.26.1",
+    "simplebar-react": "^3.2.6",
     "tailwind-merge": "^2.5.2",
     "tauri-plugin-store-api": "github:tauri-apps/tauri-plugin-store#v1",
     "vaul": "^0.9.3",

@@ -1,12 +1,15 @@
 import { useUserState } from '@/states/userState';
 
-export default function AppHeader() {
+export default function AppHeader({ height }: { height: number }) {
   const user = useUserState((state) => state.user);
   const logout = useUserState((state) => state.logout);
 
   return (
-    <header className="sticky top-0 z-10 flex h-[57px] items-center justify-between gap-1 border-b border-zinc-700 bg-background px-4">
-      <h1 className="font-nunito text-2xl">Nexus Connect</h1>
+    <header
+      style={{ height: height + 'px' }}
+      className={`flex items-center justify-between gap-1 border-b border-zinc-700 bg-background px-4`}
+    >
+      <h1 className="font-nunito text-xl">Nexus Connect</h1>
       {user && (
         <div className="flex items-center space-x-3">
           <div className="text-right">
