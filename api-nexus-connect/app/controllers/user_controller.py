@@ -4,7 +4,7 @@ from app.lib.types import AuthRequest
 from app.models.user import User, UserReadDTO, UserUpdateDTO
 from app.services.user_service import UserService
 
-from litestar import Controller, post
+from litestar import Controller, get, post
 from litestar.di import Provide
 
 from litestar_users.dependencies import provide_user_service
@@ -17,6 +17,26 @@ class UserController(Controller):
     dependencies = {
         "user_service": Provide(provide_user_service, sync_to_thread=False),
     }
+
+    @get("/following")
+    async def get_following(
+        self,
+        user_service: UserService,
+        request: AuthRequest,
+    ) -> list[User]:
+        users = await user_service.get_following(request.user.id)
+
+        return users
+
+    @get("/followers")
+    async def get_followers(
+        self,
+        user_service: UserService,
+        request: AuthRequest,
+    ) -> list[User]:
+        users = await user_service.get_followers(request.user.id)
+
+        return users
 
     @post("/follow/{user_id:uuid}")
     async def follow_user(

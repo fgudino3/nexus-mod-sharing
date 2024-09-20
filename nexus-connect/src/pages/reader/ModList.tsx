@@ -40,6 +40,13 @@ export default function ModList() {
         (mod) =>
           `https://api.nexusmods.com/v1/games/starfield/mods/${mod.id}.json`
       );
+
+      console.log(apikey, slicedList);
+
+      if (!apikey) {
+        return; // TODO: error handling
+      }
+
       emit('process_mo_mods', { apikey, nexusModUrls, nexusMods: slicedList });
 
       listenPromise = listen('mods_processed', (event: any) => {
@@ -132,6 +139,7 @@ function ProfileForm({ modList }: { modList: Mod[] }) {
             author: mod.author,
             pageUrl: mod.pageUrl,
             imageUrl: mod.imageUrl,
+            available: mod.available,
           }),
           headers: {
             authorization: 'Bearer ' + jwt,

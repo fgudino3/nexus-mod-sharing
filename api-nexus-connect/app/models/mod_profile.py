@@ -80,6 +80,7 @@ class NcMod:
     order: str
     intalled: bool
     is_patched: bool
+    available: bool
 
 
 @dataclass
@@ -117,6 +118,7 @@ def profile_to_profile_page(profile: Profile) -> ProfilePage:
                 order=mod.order,
                 page_url=mod.mod.page_url,
                 version=mod.version,
+                available=mod.mod.available,
             ),
             profile.mods,
         )
@@ -136,6 +138,7 @@ def profile_to_profile_page(profile: Profile) -> ProfilePage:
                     order=mod.order,
                     page_url=mod.mod.page_url,
                     version=None,
+                    available=True,
                 ),
                 profile.manual_mods,
             )

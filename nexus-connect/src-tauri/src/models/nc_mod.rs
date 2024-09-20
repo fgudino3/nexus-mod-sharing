@@ -9,6 +9,7 @@ pub struct NcMod {
     pub page_url: String,
     pub version: String,
     pub installed: bool,
+    pub available: bool,
     pub author: Option<String>,
     #[serde(rename = "imageUrl")]
     pub image_url: Option<String>,

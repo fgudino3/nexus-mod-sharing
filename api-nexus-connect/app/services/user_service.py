@@ -1,7 +1,9 @@
 from typing import Any
 from uuid import UUID
 
-from app.models.user import User
+from sqlalchemy import select
+
+from app.models.user import Following, User
 from app.models.role import Role
 
 from litestar import Request
@@ -63,6 +65,24 @@ class UserService(BaseUserService[User, Role]):  # type: ignore[type-var]
         await self.user_repository.session.commit()
 
         return user
+
+    async def get_following(self, user_id: UUID) -> list[User]:
+        following = await self.user_repository.session.scalars(
+            select(User)
+            .join(Following, onclause=Following.followed_id == User.id)
+            .filter_by(follower_id=user_id)
+        )
+
+        return list(following.all())
+
+    async def get_followers(self, user_id: UUID) -> list[User]:
+        following = await self.user_repository.session.scalars(
+            select(User)
+            .join(Following, onclause=Following.follower_id == User.id)
+            .filter_by(following_id=user_id)
+        )
+
+        return list(following.all())
 
     async def authenticate(
         self, data: Any, request: Request | None = None

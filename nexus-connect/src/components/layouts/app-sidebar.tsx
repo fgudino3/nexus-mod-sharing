@@ -1,11 +1,48 @@
-import { Compass, LayoutDashboard, UserCircle } from 'lucide-react';
+import { Compass, LayoutDashboard } from 'lucide-react';
 import Sidebar, { SidebarHeader, SidebarItem } from '../ui/sidebar';
 import { useLocation } from 'react-router-dom';
 import { useUserState } from '@/states/userState';
+import { fetch } from '@tauri-apps/api/http';
+import { UserDTO } from '@/interfaces/User';
+import { useEffect } from 'react';
 
 export default function AppSidebar({ headerHeight }: { headerHeight: number }) {
   const location = useLocation();
   const following = useUserState((state) => state.following);
+  const setUserConnections = useUserState((state) => state.setUserConnections);
+  const jwt = useUserState((state) => state.userJwt);
+
+  async function getConnections() {
+    const { data: following } = await fetch<UserDTO[]>(
+      'http://127.0.0.1:8000/users/following',
+      {
+        method: 'GET',
+        headers: {
+          authorization: 'Bearer ' + jwt,
+        },
+      }
+    );
+
+    const { data: followers } = await fetch<UserDTO[]>(
+      'http://127.0.0.1:8000/users/following',
+      {
+        method: 'GET',
+        headers: {
+          authorization: 'Bearer ' + jwt,
+        },
+      }
+    );
+
+    console.log(following, followers);
+
+    setUserConnections(following, followers);
+  }
+
+  useEffect(() => {
+    if (jwt) {
+      getConnections();
+    }
+  }, [jwt]);
 
   return (
     <Sidebar headerHeight={headerHeight}>
@@ -18,7 +55,7 @@ export default function AppSidebar({ headerHeight }: { headerHeight: number }) {
       <SidebarItem
         icon={<Compass size={20} />}
         text="Explore"
-        path="/profiles/me"
+        path="/profiles"
         active={location.pathname.startsWith('/profiles')}
       />
       <div className="my-3 border-t-3 dark:border-zinc-700" />
@@ -34,7 +71,10 @@ export default function AppSidebar({ headerHeight }: { headerHeight: number }) {
             />
           }
           text={user.nexusUsername}
-          path="/following"
+          path={`/${user.nexusUsername}/profiles`}
+          active={location.pathname.startsWith(
+            `/${user.nexusUsername}/profiles`
+          )}
         />
       ))}
     </Sidebar>

@@ -47,6 +47,7 @@ export const useModState = create<ModState>()((set) => ({
           fileSizeBytes: modData.attributes.fileSize,
           version: modData.attributes.modVersion,
           order: (orderCounter++).toString().padStart(4, '0'),
+          available: true,
           isPatched: false,
         });
       }

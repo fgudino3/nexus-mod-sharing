@@ -47,6 +47,7 @@ pub async fn handle_mo_mod_processing(
                             m.author = nexus_mod.author.clone();
                             m.image_url = nexus_mod.picture_url.clone();
                             m.description = nexus_mod.description.clone();
+                            m.available = nexus_mod.available.clone();
 
                             m.clone()
                         }

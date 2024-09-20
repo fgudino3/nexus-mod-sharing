@@ -34,6 +34,7 @@ export function mapMoModsToMods(moMods: MoMod[]): Mod[] {
       installed: moMod.status === '+',
       order: moMod.order,
       isPatched: false,
+      available: true,
     });
   }
 

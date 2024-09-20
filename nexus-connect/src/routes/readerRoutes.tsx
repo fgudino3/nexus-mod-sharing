@@ -1,6 +1,6 @@
 import ModManagerSelection from '@/pages/reader/ModManagerSelection';
 import VortexModListReader from '@/pages/reader/VortexModListReader';
-import MO2ModListReader from '@/pages/reader/MO2ModListReader';
+import ModOrganizerListReader from '@/pages/reader/MO2ModListReader';
 import ModList from '@/pages/reader/ModList';
 import { RouteObject } from 'react-router-dom';
 
@@ -19,7 +19,7 @@ export const READER_ROUTES: RouteObject[] = [
   },
   {
     path: '/mo2',
-    element: <MO2ModListReader />,
+    element: <ModOrganizerListReader />,
   },
   {
     path: '/mo2/:gameName',

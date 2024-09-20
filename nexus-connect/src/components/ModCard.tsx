@@ -29,13 +29,20 @@ export default function ModCard({ mod }: { mod: Mod }) {
           <p className="line-clamp-5 mt-2">{mod.description}</p>
         </div>
       </div>
-      <button
-        onClick={() => shell.open(mod.pageUrl)}
-        className="flex items-center justify-center rounded-md w-full space-x-2 font-medium px-2 py-1 bg-amber-600"
-      >
-        <span>Visit Nexus Page</span>
-        <MdiExternalLink className="h-5 w-5" />
-      </button>
+
+      {mod.available ? (
+        <button
+          onClick={() => shell.open(mod.pageUrl)}
+          className="flex items-center justify-center rounded-md w-full space-x-2 font-medium px-2 py-1 bg-amber-600"
+        >
+          <span>Visit Nexus Page</span>
+          <MdiExternalLink className="h-5 w-5" />
+        </button>
+      ) : (
+        <div className="text-center">
+          <p className="italic">Mod has been removed</p>
+        </div>
+      )}
     </div>
   );
 }

@@ -9,4 +9,5 @@ pub struct NexusMod {
     #[serde(rename(serialize = "imageUrl"))]
     pub picture_url: Option<String>,
     pub author: Option<String>,
+    pub available: bool,
 }

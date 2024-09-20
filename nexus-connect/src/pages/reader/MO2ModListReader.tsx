@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Commands from '@/services/commands';
 import { useModState } from '@/states/modState';
 
-export default function VortexModListReader() {
+export default function ModOrganizerListReader() {
   const setMoModList = useModState((state) => state.setMoModList);
   const navigate = useNavigate();
 
