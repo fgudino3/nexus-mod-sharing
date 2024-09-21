@@ -1,13 +1,12 @@
-import ModCard from '@/components/ModCard';
+import ModCard from '@/components/cards/ModCard';
 import Profile from '@/interfaces/Profile';
 import { useUserState } from '@/states/userState';
 import { fetch } from '@tauri-apps/api/http';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 export default function ProfilePage() {
   const { profileId } = useParams();
-  const navigate = useNavigate();
   const jwt = useUserState((state) => state.userJwt);
   const [profile, setProfile] = useState<Profile | null>(null);
 

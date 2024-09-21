@@ -7,7 +7,7 @@ import { useUserState } from '@/states/userState';
 import { emit, listen, UnlistenFn } from '@tauri-apps/api/event';
 import { NexusButton } from '@/components/NexusButton';
 import Profile from '@/interfaces/Profile';
-import ModCard from '@/components/ModCard';
+import ModCard from '@/components/cards/ModCard';
 
 export default function ModList() {
   const { gameName } = useParams();

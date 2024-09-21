@@ -50,7 +50,9 @@ export default function AppSidebar({ headerHeight }: { headerHeight: number }) {
         icon={<LayoutDashboard size={20} />}
         text="Dashboard"
         path="/"
-        active={location.pathname === '/'}
+        active={
+          location.pathname === '/' || location.pathname.startsWith('/me')
+        }
       />
       <SidebarItem
         icon={<Compass size={20} />}
@@ -67,7 +69,7 @@ export default function AppSidebar({ headerHeight }: { headerHeight: number }) {
             <img
               src={user.nexusProfileUrl}
               alt="avatar"
-              className="w-8 h-8 rounded-full object-cover"
+              className="w-6 h-6 rounded-full object-cover"
             />
           }
           text={user.nexusUsername}

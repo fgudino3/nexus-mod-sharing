@@ -6,7 +6,11 @@ import { RouteObject } from 'react-router-dom';
 
 export const PROFILE_ROUTES: RouteObject[] = [
   {
-    path: '/profiles/me',
+    path: '/profiles',
+    element: <AllProfiles />,
+  },
+  {
+    path: '/me/profiles',
     element: <MyProfiles />,
   },
   {
@@ -14,8 +18,8 @@ export const PROFILE_ROUTES: RouteObject[] = [
     element: <UserProfiles />,
   },
   {
-    path: '/profiles',
-    element: <AllProfiles />,
+    path: '/:username/profiles/:profileId',
+    element: <ProfilePage />,
   },
   {
     path: '/profiles/:profileId',

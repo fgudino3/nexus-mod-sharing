@@ -1,3 +1,4 @@
+import ProfileCard from '@/components/cards/ProfileCard';
 import OffsetPagination from '@/interfaces/OffsetPagination';
 import Profile from '@/interfaces/Profile';
 import { useUserState } from '@/states/userState';
@@ -32,24 +33,14 @@ export default function AllProfiles() {
   }, []);
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-10">Profiles</h1>
-      <div className="grid grid-cols-3 gap-6">
-        {profiles.map((profile) => (
-          <button
-            key={profile.id}
-            onClick={() => navigate('/profiles/' + profile.id)}
-            className="border p-5 rounded-md"
-          >
-            <p className="font-bold">{profile.name}</p>
-            <p className="text-sm mt-3">Game: {profile.game}</p>
-            <p className="text-sm mt-2">
-              Installed Mods: <span>{profile.modCount}</span>
-            </p>
-            <p className="mt-2 text-sm">{profile.description}</p>
-          </button>
-        ))}
-      </div>
+    <div className="grid grid-cols-3 gap-6">
+      {profiles.map((profile) => (
+        <ProfileCard
+          profile={profile}
+          key={profile.id}
+          toProfile={() => navigate('/profiles/' + profile.id)}
+        />
+      ))}
     </div>
   );
 }
