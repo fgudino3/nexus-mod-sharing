@@ -1,6 +1,8 @@
 import { useUserState } from '@/states/userState';
+import { useNavigate } from 'react-router-dom';
 
 export default function AppHeader({ height }: { height: number }) {
+  const navigate = useNavigate();
   const user = useUserState((state) => state.user);
   const logout = useUserState((state) => state.logout);
 
@@ -10,7 +12,7 @@ export default function AppHeader({ height }: { height: number }) {
       className={`flex items-center justify-between gap-1 border-b border-zinc-700 bg-background px-4`}
     >
       <h1 className="font-nunito text-xl">Nexus Connect</h1>
-      {user && (
+      {user ? (
         <div className="flex items-center space-x-3">
           <div className="text-right">
             <p className="text-xs">{user.nexusUsername}</p>
@@ -27,6 +29,13 @@ export default function AppHeader({ height }: { height: number }) {
             className="h-9 w-9 rounded-full object-contain"
           />
         </div>
+      ) : (
+        <button
+          className="text-primary hover:underline text-sm"
+          onClick={() => navigate('/login')}
+        >
+          Log in
+        </button>
       )}
     </header>
   );
