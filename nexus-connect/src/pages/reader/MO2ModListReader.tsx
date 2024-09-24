@@ -36,7 +36,7 @@ export default function ModOrganizerListReader() {
       </div>
       {/* CONTENT */}
       <div className="flex flex-col items-center">
-        <img src="/mo2-logo.png" className="logo" alt="react logo" />
+        <img src="/mo2-logo.png" className="logo h-36" alt="Mo2 logo" />
         <div className="h-full flex flex-col items-center justify-center">
           <h1 className="text-xl">
             Export a csv file from MO2. Make sure to check all columns for

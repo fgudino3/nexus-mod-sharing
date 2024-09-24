@@ -63,19 +63,8 @@ export default function VortexModListReader() {
 
   return (
     <>
-      {/* HEADER */}
-      <div className="py-5">
-        <button
-          className="flex items-center space-x-2 text-xl"
-          onClick={() => navigate(-1)}
-        >
-          <MdiArrowLeft />
-          <span>back</span>
-        </button>
-      </div>
-      {/* CONTENT */}
       <div className="flex flex-col items-center">
-        <img src="/vortex-logo.png" className="logo" alt="Vortex logo" />
+        <img src="/vortex-logo.png" className="logo h-36" alt="Vortex logo" />
         <div className="flex items-center space-x-2">
           <p className="py-2 px-3 font-mono bg-gray-800 rounded-md">
             {appData}
