@@ -6,13 +6,7 @@ import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import CenteredContent from '@/components/layouts/centered-content';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Form,
   FormField,
@@ -28,6 +22,8 @@ import { defineStepper } from '@stepperize/react';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import Stepper from '@/components/ui/stepper';
+import { shell } from '@tauri-apps/api';
 
 // Minimum 7 characters, at least one uppercase letter, one lowercase letter, one number and one special character
 const passwordValidation = new RegExp(
@@ -67,6 +63,7 @@ export default function Register() {
 
   const savedApiKey = useUserState((state) => state.nexusApiKey);
   const saveNexusApiKey = useUserState((state) => state.saveNexusApiKey);
+  const [currentStep, setCurrentStep] = useState(0);
   const [apiKey, setApiKey] = useState('');
   const [nexusUsername, setNexusUsername] = useState('');
   const [nexusProfileUrl, setNexusProfileUrl] = useState('');
@@ -113,6 +110,7 @@ export default function Register() {
     }
 
     stepper.next();
+    setCurrentStep((step) => step + 1);
   }
 
   async function register(email: string, password: string) {
@@ -133,45 +131,70 @@ export default function Register() {
 
   return (
     <CenteredContent>
-      {stepper.when('apikey', (step) => (
-        <Card className="mx-auto w-sm">
-          <CardHeader>
-            <CardTitle className="text-2xl">{step.title}</CardTitle>
-            <CardDescription>{step.description}</CardDescription>
-          </CardHeader>
+      <div className="mb-5">
+        <Stepper steps={stepper.all} currentStep={currentStep} />
+      </div>
+      <Card className="mx-auto w-2xl !border-none">
+        {stepper.when('apikey', () => (
           <CardContent>
-            <Label htmlFor="apikey">Nexus Api Key</Label>
-            <Textarea
-              onChange={(e) => setApiKey(e.currentTarget.value)}
-              className="mt-1"
-              placeholder="Paste your Nexus API Key here."
-              id="apikey"
-            />
-            <Button className="mt-5 w-full" onClick={() => verifyApiKey()}>
-              Verify API Key
-            </Button>
-          </CardContent>
-        </Card>
-      ))}
-      {stepper.when('register', (step) => (
-        <Card className="mx-auto max-w-sm">
-          <CardHeader>
-            <CardTitle className="text-2xl">{step.title}</CardTitle>
-            <CardDescription>{step.description}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-center space-x-2 mb-5">
-              <Avatar>
-                <AvatarImage src={nexusProfileUrl} />
-                <AvatarFallback>TODO</AvatarFallback>
-              </Avatar>
-              <span>{nexusUsername}</span>
+            <p className="italic">
+              BETA Privacy Notice: This method of signing in is for the test
+              version of Nexus Connect. The API key will only be stored locally
+              on your PC.
+            </p>
+            <ul className="space-y-3 list-disc mt-5">
+              <li>
+                Go to your Nexus settings{' '}
+                <button
+                  className="underline text-primary"
+                  onClick={() =>
+                    shell.open('https://next.nexusmods.com/settings/api-keys')
+                  }
+                >
+                  API Keys page
+                </button>
+                .
+              </li>
+              <li>
+                Scroll to the bottom of the page and generate a Personal API Key
+              </li>
+              <li>
+                <Textarea
+                  onChange={(e) => setApiKey(e.currentTarget.value)}
+                  className="mt-1"
+                  placeholder="Paste your Nexus API Key here."
+                  id="apikey"
+                />
+              </li>
+            </ul>
+            <div className="flex justify-end">
+              <Button
+                className="mt-5"
+                disabled={apiKey.length === 0}
+                onClick={() => verifyApiKey()}
+              >
+                Verify API Key
+              </Button>
             </div>
+          </CardContent>
+        ))}
+        {stepper.when('register', () => (
+          <CardContent>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-5"
+                className="grid grid-cols-2 gap-6"
               >
+                <div className="space-y-2">
+                  <Label>Nexus Account</Label>
+                  <div className="flex items-center space-x-2 self-center">
+                    <Avatar>
+                      <AvatarImage src={nexusProfileUrl} />
+                      <AvatarFallback>TODO</AvatarFallback>
+                    </Avatar>
+                    <span>{nexusUsername}</span>
+                  </div>
+                </div>
                 <FormField
                   control={form.control}
                   name="email"
@@ -223,14 +246,17 @@ export default function Register() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="!bg-primary w-full">
+                <Button
+                  type="submit"
+                  className="!bg-primary col-span-2 justify-self-end"
+                >
                   Register
                 </Button>
               </form>
             </Form>
           </CardContent>
-        </Card>
-      ))}
+        ))}
+      </Card>
     </CenteredContent>
   );
 }
