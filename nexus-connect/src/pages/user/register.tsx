@@ -24,6 +24,7 @@ import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Stepper from '@/components/ui/stepper';
 import { shell } from '@tauri-apps/api';
+import LoadingDialog from '@/components/dialogs/LoadingDialog';
 
 // Minimum 7 characters, at least one uppercase letter, one lowercase letter, one number and one special character
 const passwordValidation = new RegExp(
@@ -32,7 +33,6 @@ const passwordValidation = new RegExp(
 
 const formSchema = z
   .object({
-    email: z.string().email(),
     password: z.string().min(7).regex(passwordValidation, {
       message:
         'Password must contain at least 1 uppercase, lowercase, number and special character',
@@ -67,11 +67,12 @@ export default function Register() {
   const [apiKey, setApiKey] = useState('');
   const [nexusUsername, setNexusUsername] = useState('');
   const [nexusProfileUrl, setNexusProfileUrl] = useState('');
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
       password: '',
       passwordConfirm: '',
     },
@@ -92,25 +93,28 @@ export default function Register() {
     if (!apiKey && !key) {
       return;
     }
-
-    const { data, ok } = await fetch<{ name: string; profile_url: string }>(
-      'https://api.nexusmods.com/v1/users/validate.json',
-      {
-        method: 'GET',
-        headers: {
-          apikey: key ?? apiKey,
-        },
-      }
-    );
+    setLoading(() => true);
+    const { data, ok } = await fetch<{
+      name: string;
+      profile_url: string;
+      email: string;
+    }>('https://api.nexusmods.com/v1/users/validate.json', {
+      method: 'GET',
+      headers: {
+        apikey: key ?? apiKey,
+      },
+    });
 
     if (ok) {
       setNexusUsername(() => data.name);
       setNexusProfileUrl(() => data.profile_url);
+      setEmail(() => data.email);
       saveNexusApiKey(apiKey);
     }
 
     stepper.next();
     setCurrentStep((step) => step + 1);
+    setLoading(() => false);
   }
 
   async function register(email: string, password: string) {
@@ -131,10 +135,12 @@ export default function Register() {
 
   return (
     <CenteredContent>
-      <div className="mb-5">
+      {loading && <LoadingDialog text="Verifying Nexus Api Key..." />}
+      <div className="mb-5 flex flex-col justify-center items-center space-y-5">
+        <h1 className="text-3xl">Create An Account</h1>
         <Stepper steps={stepper.all} currentStep={currentStep} />
       </div>
-      <Card className="mx-auto w-2xl !border-none">
+      <Card className="mx-auto max-w-xl !border-none">
         {stepper.when('apikey', () => (
           <CardContent>
             <p className="italic">
@@ -183,7 +189,7 @@ export default function Register() {
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="grid grid-cols-2 gap-6"
+                className="space-y-5 w-sm"
               >
                 <div className="space-y-2">
                   <Label>Nexus Account</Label>
@@ -192,26 +198,12 @@ export default function Register() {
                       <AvatarImage src={nexusProfileUrl} />
                       <AvatarFallback>TODO</AvatarFallback>
                     </Avatar>
-                    <span>{nexusUsername}</span>
+                    <div>
+                      <p className="font-semibold">{nexusUsername}</p>
+                      <p className="text-sm opacity-50">{email}</p>
+                    </div>
                   </div>
                 </div>
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="email"
-                          placeholder="example@test.com"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
                 <FormField
                   control={form.control}
                   name="password"
@@ -246,12 +238,11 @@ export default function Register() {
                     </FormItem>
                   )}
                 />
-                <Button
-                  type="submit"
-                  className="!bg-primary col-span-2 justify-self-end"
-                >
-                  Register
-                </Button>
+                <div className="flex justify-end">
+                  <Button type="submit" className="!bg-primary">
+                    Register
+                  </Button>
+                </div>
               </form>
             </Form>
           </CardContent>
