@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import AppSidebar from './components/layouts/app-sidebar';
 import { useSidebar } from './states/sidebarState';
 import AppHeader from './components/layouts/app-header';
+import { Toaster } from './components/ui/sonner';
 import SimpleBar from 'simplebar-react';
 
 export default function Layout() {
@@ -21,6 +22,7 @@ export default function Layout() {
       >
         <Outlet />
       </SimpleBar>
+      <Toaster richColors />
     </>
   );
 }

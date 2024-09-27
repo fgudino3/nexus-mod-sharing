@@ -13,3 +13,9 @@ export interface UserDTO extends User {
   following: UserBase[];
   followers: UserBase[];
 }
+
+export interface NexusProfile {
+  name: string;
+  profile_url: string;
+  email: string;
+}

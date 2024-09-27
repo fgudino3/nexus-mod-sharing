@@ -1,7 +1,4 @@
-import { fetch, Body } from '@tauri-apps/api/http';
-import { useNavigate } from 'react-router-dom';
 import { useUserState } from '@/states/userState';
-import User from '@/interfaces/User';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import CenteredContent from '@/components/layouts/centered-content';
@@ -25,6 +22,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Stepper from '@/components/ui/stepper';
 import { shell } from '@tauri-apps/api';
 import LoadingDialog from '@/components/dialogs/LoadingDialog';
+import useNexusApi from '@/hooks/useNexusApi';
+import { toast } from 'sonner';
+import useUserApi from '@/hooks/useUserApi';
+import { NexusProfile } from '@/interfaces/User';
 
 // Minimum 7 characters, at least one uppercase letter, one lowercase letter, one number and one special character
 const passwordValidation = new RegExp(
@@ -58,16 +59,15 @@ const { useStepper } = defineStepper(
 );
 
 export default function Register() {
-  const navigate = useNavigate();
+  const { getNexusProfileAsync } = useNexusApi();
+  const { register } = useUserApi();
   const stepper = useStepper();
 
   const savedApiKey = useUserState((state) => state.nexusApiKey);
   const saveNexusApiKey = useUserState((state) => state.saveNexusApiKey);
   const [currentStep, setCurrentStep] = useState(0);
   const [apiKey, setApiKey] = useState('');
-  const [nexusUsername, setNexusUsername] = useState('');
-  const [nexusProfileUrl, setNexusProfileUrl] = useState('');
-  const [email, setEmail] = useState('');
+  const [nexusProfile, setNexusProfile] = useState<NexusProfile>();
   const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -94,43 +94,22 @@ export default function Register() {
       return;
     }
     setLoading(() => true);
-    const { data, ok } = await fetch<{
-      name: string;
-      profile_url: string;
-      email: string;
-    }>('https://api.nexusmods.com/v1/users/validate.json', {
-      method: 'GET',
-      headers: {
-        apikey: key ?? apiKey,
-      },
-    });
 
-    if (ok) {
-      setNexusUsername(() => data.name);
-      setNexusProfileUrl(() => data.profile_url);
-      setEmail(() => data.email);
-      saveNexusApiKey(apiKey);
+    const profile = await getNexusProfileAsync(key ?? apiKey);
+
+    if (!profile) {
+      toast.error('Invalid API key');
+      setApiKey(() => '');
+      setLoading(() => false);
+      return;
     }
+
+    setNexusProfile(profile);
+    saveNexusApiKey(apiKey);
 
     stepper.next();
     setCurrentStep((step) => step + 1);
     setLoading(() => false);
-  }
-
-  async function register(email: string, password: string) {
-    const { ok } = await fetch<User>('http://127.0.0.1:8000/register', {
-      method: 'POST',
-      body: Body.json({
-        email,
-        password,
-        nexusUsername,
-        nexusProfileUrl,
-      }),
-    });
-
-    if (ok) {
-      navigate('/verify');
-    }
   }
 
   return (
@@ -166,6 +145,7 @@ export default function Register() {
               </li>
               <li>
                 <Textarea
+                  value={apiKey}
                   onChange={(e) => setApiKey(e.currentTarget.value)}
                   className="mt-1"
                   placeholder="Paste your Nexus API Key here."
@@ -191,19 +171,23 @@ export default function Register() {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-5 w-sm"
               >
-                <div className="space-y-2">
-                  <Label>Nexus Account</Label>
-                  <div className="flex items-center space-x-2 self-center">
-                    <Avatar>
-                      <AvatarImage src={nexusProfileUrl} />
-                      <AvatarFallback>TODO</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-semibold">{nexusUsername}</p>
-                      <p className="text-sm opacity-50">{email}</p>
+                {nexusProfile && (
+                  <div className="space-y-2">
+                    <Label>Nexus Account</Label>
+                    <div className="flex items-center space-x-2 self-center">
+                      <Avatar>
+                        <AvatarImage src={nexusProfile.profile_url} />
+                        <AvatarFallback>TODO</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-semibold">{nexusProfile.name}</p>
+                        <p className="text-sm opacity-50">
+                          {nexusProfile.email}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
                 <FormField
                   control={form.control}
                   name="password"
