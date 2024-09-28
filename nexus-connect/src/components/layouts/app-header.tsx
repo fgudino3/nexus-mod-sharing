@@ -29,7 +29,7 @@ export default function AppHeader({ height }: { height: number }) {
   return (
     <header
       style={{ height: height + 'px' }}
-      className={`flex items-center justify-between gap-1 border-b border-zinc-700 bg-background px-4`}
+      className={`flex items-center justify-between gap-1 border-b border-accent bg-background px-4`}
     >
       <div className="flex items-center space-x-5">
         <h1 className="font-nunito text-xl">Nexus Connect</h1>
