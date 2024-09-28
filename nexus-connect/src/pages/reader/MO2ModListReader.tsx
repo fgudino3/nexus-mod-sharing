@@ -15,7 +15,7 @@ export default function ModOrganizerListReader() {
 
       if (mods) {
         setMoModList(mapMoModsToMods(mods));
-        navigate('/mo2/starfield');
+        navigate('/mod-manager/mo2/starfield');
       }
     } catch (error) {
       console.error(error);

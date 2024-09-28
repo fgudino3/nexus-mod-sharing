@@ -62,12 +62,12 @@ export default function Login() {
 
     const [user, following, followers] = extractFromUserDTO(data);
 
-    saveUser(user);
+    await saveUser(user);
     setUserConnections(following, followers);
 
     const jwt = headers.authorization.split(' ')[1];
 
-    saveJwt(jwt);
+    await saveJwt(jwt);
 
     navigate('/');
   }

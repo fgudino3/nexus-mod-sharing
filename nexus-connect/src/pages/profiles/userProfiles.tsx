@@ -1,17 +1,14 @@
-import ProfileCard from '@/components/cards/ProfileCard';
-import OffsetPagination from '@/interfaces/OffsetPagination';
-import Profile from '@/interfaces/Profile';
+import UserPage from '@/components/layouts/user-page';
+import useProfileApi from '@/hooks/useProfileApi';
 import { useUserState } from '@/states/userState';
-import { fetch } from '@tauri-apps/api/http';
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 
 export default function UserProfiles() {
-  const navigate = useNavigate();
   const { username } = useParams();
+  const { getProfiles, profiles } = useProfileApi();
   const following = useUserState((state) => state.following);
-  const jwt = useUserState((state) => state.userJwt);
-  const [profiles, setProfiles] = useState<Profile[]>([]);
+
   const user = following.find((user) => user.nexusUsername === username);
 
   if (!user) {
@@ -22,48 +19,14 @@ export default function UserProfiles() {
     );
   }
 
-  async function getProfiles() {
-    if (!user) {
-      return;
-    }
-
-    const { data, ok } = await fetch<OffsetPagination<Profile>>(
-      'http://127.0.0.1:8000/profiles',
-      {
-        method: 'GET',
-        headers: {
-          authorization: 'Bearer ' + jwt,
-        },
-        query: {
-          user_id: user.id,
-        },
-      }
-    );
-
-    if (ok) {
-      console.log(data.items);
-      setProfiles(() => data.items);
-    }
-  }
-
   useEffect(() => {
-    getProfiles();
+    console.log(user.id);
+    getProfiles(user.id);
   }, []);
 
   return (
     <>
-      <h1 className="text-3xl font-bold mb-10">
-        {user.nexusUsername}'s Profiles
-      </h1>
-      <div className="grid grid-cols-3 gap-6">
-        {profiles.map((profile) => (
-          <ProfileCard
-            profile={profile}
-            key={profile.id}
-            toProfile={() => navigate(`/${username}/profiles/${profile.id}`)}
-          />
-        ))}
-      </div>
+      <UserPage user={user} profiles={profiles} />
     </>
   );
 }

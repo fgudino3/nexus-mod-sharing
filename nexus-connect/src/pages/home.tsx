@@ -1,22 +1,27 @@
-import { Download, IdCard } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-
-const buttonCss =
-  'bg-accent border transition-colors hover:bg-accent/90 border-zinc-7 space-y-5 w-full flex shadow-accent flex-col items-center p-5 rounded-lg';
+import CenteredContent from '@/components/layouts/centered-content';
+import UserPage from '@/components/layouts/user-page';
+import useProfileApi from '@/hooks/useProfileApi';
+import { useUserState } from '@/states/userState';
+import { useEffect } from 'react';
 
 export default function Home() {
-  const navigate = useNavigate();
+  const user = useUserState((state) => state.user);
+  const jwt = useUserState((state) => state.userJwt);
+  const { getMyProfiles, profiles } = useProfileApi();
+
+  useEffect(() => {
+    getMyProfiles();
+  }, [jwt]);
 
   return (
-    <div className="grid grid-cols-3 gap-6 w-full">
-      <button className={buttonCss} onClick={() => navigate('/reader')}>
-        <Download size={100} />
-        <span className="text-xl">Import Mod List</span>
-      </button>
-      <button className={buttonCss} onClick={() => navigate('/me/profiles')}>
-        <IdCard size={100} />
-        <span className="text-xl">My Profiles</span>
-      </button>
-    </div>
+    <>
+      {user ? (
+        <UserPage user={user} profiles={profiles} isMe />
+      ) : (
+        <CenteredContent>
+          <div>TODO: login or sign up button</div>
+        </CenteredContent>
+      )}
+    </>
   );
 }

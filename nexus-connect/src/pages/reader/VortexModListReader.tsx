@@ -1,5 +1,4 @@
 import MdiCheckboxMarkedCircle from '~icons/mdi/checkbox-marked-circle';
-import MdiArrowLeft from '~icons/mdi/arrow-left';
 import { useNavigate } from 'react-router-dom';
 import { fs } from '@tauri-apps/api';
 import { useState, useEffect } from 'react';
@@ -16,7 +15,6 @@ export default function VortexModListReader() {
   const [backupFileExists, setBackupFileExists] = useState<boolean>(false);
   const [gameNames, setGameNames] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const navigate = useNavigate();
   const modState = useModState();
 
   useEffect(() => {
@@ -120,7 +118,7 @@ function GameSelectionList({
           {gameNames.map((gameName) => (
             <NexusButton
               onClick={() => {
-                navigate('/vortex/' + gameName);
+                navigate('/mod-manager/vortex/' + gameName);
               }}
               className="px-3 py-2 rounded-md bg-amber-600"
               key={gameName}

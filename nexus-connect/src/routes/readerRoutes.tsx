@@ -6,23 +6,23 @@ import { RouteObject } from 'react-router-dom';
 
 export const READER_ROUTES: RouteObject[] = [
   {
-    path: '/reader',
+    path: '/mod-manager',
     element: <ModManagerSelection />,
   },
   {
-    path: '/vortex',
+    path: '/mod-manager/vortex',
     element: <VortexModListReader />,
   },
   {
-    path: '/vortex/:gameName',
+    path: '/mod-manager/vortex/:gameName',
     element: <ModList />,
   },
   {
-    path: '/mo2',
+    path: '/mod-manager/mo2',
     element: <ModOrganizerListReader />,
   },
   {
-    path: '/mo2/:gameName',
+    path: '/mod-manager/mo2/:gameName',
     element: <ModList />,
   },
 ];

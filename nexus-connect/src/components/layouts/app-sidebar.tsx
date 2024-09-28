@@ -51,7 +51,8 @@ export default function AppSidebar({ headerHeight }: { headerHeight: number }) {
         text="Dashboard"
         path="/"
         active={
-          location.pathname === '/' || location.pathname.startsWith('/me')
+          location.pathname === '/' ||
+          location.pathname.startsWith('/mod-manager')
         }
       />
       <SidebarItem
