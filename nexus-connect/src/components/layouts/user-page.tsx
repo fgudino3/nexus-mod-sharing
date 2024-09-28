@@ -6,7 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
 import { useUserState } from '@/states/userState';
 import { format } from 'date-fns';
-import { Calendar } from 'lucide-react';
+import { Calendar, Import } from 'lucide-react';
+import { Separator } from '../ui/separator';
 
 interface UserPageProps {
   user: UserBase;
@@ -47,8 +48,12 @@ export default function UserPage({ user, profiles, isMe }: UserPageProps) {
           </div>
         </div>
         {isMe ? (
-          <Button onClick={() => navigate('/mod-manager')}>
-            Create Profile
+          <Button
+            className="flex items-center space-x-2"
+            onClick={() => navigate('/mod-manager')}
+          >
+            <Import />
+            <span className="font-medium">Create Profile</span>
           </Button>
         ) : following.some((user) => user.id === user.id) ? (
           <Button variant="outline" onClick={() => console.log('TODO')}>
@@ -58,7 +63,7 @@ export default function UserPage({ user, profiles, isMe }: UserPageProps) {
           <Button onClick={() => console.log('TODO')}>Follow</Button>
         )}
       </div>
-      <hr className="my-10" />
+      <Separator className="my-10" />
       {/* PROFILES */}
       <div className="grid grid-cols-3 gap-6 mt-10">
         {profiles.map((profile) => (

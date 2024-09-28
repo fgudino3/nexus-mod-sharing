@@ -1,6 +1,5 @@
 import { NexusButton } from '@/components/NexusButton';
 import { mapMoModsToMods } from '@/utils/mapping';
-import MdiArrowLeft from '~icons/mdi/arrow-left';
 import { useNavigate } from 'react-router-dom';
 import Commands from '@/services/commands';
 import { useModState } from '@/states/modState';
@@ -24,17 +23,6 @@ export default function ModOrganizerListReader() {
 
   return (
     <>
-      {/* HEADER */}
-      <div className="py-5">
-        <button
-          className="flex items-center space-x-2 text-xl"
-          onClick={() => navigate(-1)}
-        >
-          <MdiArrowLeft />
-          <span>back</span>
-        </button>
-      </div>
-      {/* CONTENT */}
       <div className="flex flex-col items-center">
         <img src="/mo2-logo.png" className="logo h-36" alt="Mo2 logo" />
         <div className="h-full flex flex-col items-center justify-center">

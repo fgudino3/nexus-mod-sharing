@@ -24,7 +24,7 @@ export default function Sidebar({ children, headerHeight }: SidebarProps) {
           <ul className="flex-1">{children}</ul>
         </SidebarContext.Provider>
 
-        <Button size="sm" onClick={toggleSidebar}>
+        <Button size="sm" className="h-6" onClick={toggleSidebar}>
           {expanded ? <ChevronFirst /> : <ChevronLast />}
         </Button>
       </nav>

@@ -14,7 +14,7 @@ interface ProfileCardProps {
 
 export default function ProfileCard({ profile, toProfile }: ProfileCardProps) {
   return (
-    <Card onClick={toProfile}>
+    <Card onClick={toProfile} className="border-accent">
       <CardHeader>
         <CardTitle>{profile.name}</CardTitle>
         <CardDescription>{profile.game}</CardDescription>
