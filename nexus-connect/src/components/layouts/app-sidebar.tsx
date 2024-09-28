@@ -2,41 +2,14 @@ import { Compass, LayoutDashboard } from 'lucide-react';
 import Sidebar, { SidebarHeader, SidebarItem } from '../ui/sidebar';
 import { useLocation } from 'react-router-dom';
 import { useUserState } from '@/states/userState';
-import { fetch } from '@tauri-apps/api/http';
-import { UserDTO } from '@/interfaces/User';
 import { useEffect } from 'react';
+import useUserApi from '@/hooks/useUserApi';
 
 export default function AppSidebar({ headerHeight }: { headerHeight: number }) {
   const location = useLocation();
-  const following = useUserState((state) => state.following);
-  const setUserConnections = useUserState((state) => state.setUserConnections);
   const jwt = useUserState((state) => state.userJwt);
-
-  async function getConnections() {
-    const { data: following } = await fetch<UserDTO[]>(
-      'http://127.0.0.1:8000/users/following',
-      {
-        method: 'GET',
-        headers: {
-          authorization: 'Bearer ' + jwt,
-        },
-      }
-    );
-
-    const { data: followers } = await fetch<UserDTO[]>(
-      'http://127.0.0.1:8000/users/following',
-      {
-        method: 'GET',
-        headers: {
-          authorization: 'Bearer ' + jwt,
-        },
-      }
-    );
-
-    console.log(following, followers);
-
-    setUserConnections(following, followers);
-  }
+  const following = useUserState((state) => state.following);
+  const { getConnections } = useUserApi();
 
   useEffect(() => {
     if (jwt) {
@@ -47,7 +20,7 @@ export default function AppSidebar({ headerHeight }: { headerHeight: number }) {
   return (
     <Sidebar headerHeight={headerHeight}>
       <SidebarItem
-        icon={<LayoutDashboard size={20} />}
+        icon={<LayoutDashboard size={24} />}
         text="Dashboard"
         path="/"
         active={
@@ -56,7 +29,7 @@ export default function AppSidebar({ headerHeight }: { headerHeight: number }) {
         }
       />
       <SidebarItem
-        icon={<Compass size={20} />}
+        icon={<Compass size={24} />}
         text="Explore"
         path="/profiles"
         active={location.pathname.startsWith('/profiles')}
@@ -74,10 +47,8 @@ export default function AppSidebar({ headerHeight }: { headerHeight: number }) {
             />
           }
           text={user.nexusUsername}
-          path={`/${user.nexusUsername}/profiles`}
-          active={location.pathname.startsWith(
-            `/${user.nexusUsername}/profiles`
-          )}
+          path={`/user/${user.id}`}
+          active={location.pathname.startsWith(`/user/${user.id}`)}
         />
       ))}
     </Sidebar>

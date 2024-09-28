@@ -3,9 +3,11 @@ import OffsetPagination from '@/interfaces/OffsetPagination';
 import { useUserState } from '@/states/userState';
 import Profile from '@/interfaces/Profile';
 import { useState } from 'react';
+import { UserBase } from '@/interfaces/User';
 
 export default function useProfileApi() {
   const jwt = useUserState((state) => state.userJwt);
+  const [user, setUser] = useState<UserBase>();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [canPage, setCanPage] = useState(true);
@@ -19,7 +21,6 @@ export default function useProfileApi() {
   }
 
   async function getMyProfiles() {
-    console.log('hello?', canPage, jwt);
     if (!canPage || !jwt) {
       return;
     }
@@ -65,8 +66,12 @@ export default function useProfileApi() {
 
     if (ok) {
       updatePage(data);
+      setUser({
+        id: data.items[0].userId,
+        ...data.items[0].user,
+      });
     }
   }
 
-  return { getMyProfiles, getProfiles, profiles };
+  return { getMyProfiles, getProfiles, profiles, user };
 }

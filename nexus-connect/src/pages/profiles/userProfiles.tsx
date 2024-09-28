@@ -1,17 +1,13 @@
 import UserPage from '@/components/layouts/user-page';
 import useProfileApi from '@/hooks/useProfileApi';
-import { useUserState } from '@/states/userState';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 export default function UserProfiles() {
-  const { username } = useParams();
-  const { getProfiles, profiles } = useProfileApi();
-  const following = useUserState((state) => state.following);
+  const { userId } = useParams();
+  const { getProfiles, profiles, user } = useProfileApi();
 
-  const user = following.find((user) => user.nexusUsername === username);
-
-  if (!user) {
+  if (!userId) {
     return (
       <>
         <p>No user found</p>
@@ -20,13 +16,16 @@ export default function UserProfiles() {
   }
 
   useEffect(() => {
-    console.log(user.id);
-    getProfiles(user.id);
+    getProfiles(userId);
   }, []);
 
   return (
     <>
-      <UserPage user={user} profiles={profiles} />
+      {user ? (
+        <UserPage user={user} profiles={profiles} />
+      ) : (
+        <p>No user found</p>
+      )}
     </>
   );
 }

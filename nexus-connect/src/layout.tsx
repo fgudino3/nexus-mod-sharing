@@ -17,7 +17,7 @@ export default function Layout() {
         style={{ height: `calc(100vh - ${headerHeightPx}px)` }}
         autoHide={false}
         className={`p-5 overflow-auto transition-all ${
-          expanded ? 'ml-[156px]' : 'ml-[48px]'
+          expanded ? 'ml-[160px]' : 'ml-[52px]'
         }`}
       >
         <Outlet />

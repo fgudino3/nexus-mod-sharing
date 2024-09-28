@@ -8,6 +8,7 @@ import { useUserState } from '@/states/userState';
 import { format } from 'date-fns';
 import { Calendar, Import } from 'lucide-react';
 import { Separator } from '../ui/separator';
+import useUserApi from '@/hooks/useUserApi';
 
 interface UserPageProps {
   user: UserBase;
@@ -16,6 +17,7 @@ interface UserPageProps {
 }
 
 export default function UserPage({ user, profiles, isMe }: UserPageProps) {
+  const { follow, unfollow } = useUserApi();
   const following = useUserState((state) => state.following);
   const navigate = useNavigate();
 
@@ -56,11 +58,11 @@ export default function UserPage({ user, profiles, isMe }: UserPageProps) {
             <span className="font-medium">Create Profile</span>
           </Button>
         ) : following.some((user) => user.id === user.id) ? (
-          <Button variant="outline" onClick={() => console.log('TODO')}>
+          <Button variant="outline" onClick={() => unfollow(user.id)}>
             Unfollow
           </Button>
         ) : (
-          <Button onClick={() => console.log('TODO')}>Follow</Button>
+          <Button onClick={() => follow(user.id)}>Follow</Button>
         )}
       </div>
       <Separator className="my-10" />

@@ -9,7 +9,7 @@ export const PROFILE_ROUTES: RouteObject[] = [
     element: <AllProfiles />,
   },
   {
-    path: '/:username/profiles',
+    path: '/user/:userId',
     element: <UserProfiles />,
   },
   {
