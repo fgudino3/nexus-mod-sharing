@@ -64,9 +64,7 @@ export default function VortexModListReader() {
       <div className="flex flex-col items-center">
         <img src="/vortex-logo.png" className="logo h-36" alt="Vortex logo" />
         <div className="flex items-center space-x-2">
-          <p className="py-2 px-3 font-mono bg-gray-800 rounded-md">
-            {appData}
-          </p>
+          <p className="py-2 px-3 font-mono bg-accent rounded-md">{appData}</p>
           <StatusIcon exists={backupFileExists} loading={loading} />
         </div>
         <GameSelectionList

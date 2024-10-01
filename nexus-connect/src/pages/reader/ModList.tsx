@@ -1,18 +1,25 @@
 import { useModState } from '@/states/modState';
 import { useParams, useLocation } from 'react-router-dom';
 import { fetch, Body } from '@tauri-apps/api/http';
-import Mod from '@/interfaces/Mod';
+import Mod, { ManualModUpsert } from '@/interfaces/Mod';
 import { useEffect, useState } from 'react';
 import { useUserState } from '@/states/userState';
 import { emit, listen, UnlistenFn } from '@tauri-apps/api/event';
 import { NexusButton } from '@/components/NexusButton';
 import Profile from '@/interfaces/Profile';
 import ModCard from '@/components/cards/ModCard';
+import { TabsList, Tabs, TabsContent, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Info } from 'lucide-react';
+import { useImmer } from 'use-immer';
+
+const gridCss =
+  'grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 mt-5';
 
 export default function ModList() {
   const { gameName } = useParams();
   const { pathname } = useLocation();
-  const [modList, setModList] = useState<Mod[]>([]);
+  const [modList, setModList] = useImmer<Mod[]>([]);
   const vortexMods = useModState((state) =>
     state.vortexModdedGames.get(gameName!)
   );
@@ -31,7 +38,7 @@ export default function ModList() {
     let listenPromise: Promise<UnlistenFn> | undefined;
 
     if (pathname.includes('vortex')) {
-      setModList(() => vortexMods ?? []);
+      setModList(vortexMods ?? []);
       console.log(vortexMods);
     } else {
       const startTime = new Date();
@@ -54,7 +61,7 @@ export default function ModList() {
           event,
           `Elapsed Time: ${new Date().getTime() - startTime.getTime()} ms`
         );
-        setModList(() =>
+        setModList(
           (event.payload.mods as Mod[]).sort((a, b) =>
             a.order!.localeCompare(b.order!)
           )
@@ -79,14 +86,66 @@ export default function ModList() {
     );
   }
 
+  const manualMods = modList.filter((mod) => mod.id === undefined);
+  const nexusMods = modList.filter((mod) => mod.id !== undefined);
+
+  function editManualMod(order: string, updatedMod: ManualModUpsert) {
+    setModList((mods) => {
+      const mod = mods.find((mod) => mod.order === order);
+
+      if (!mod) {
+        return;
+      }
+
+      mod.name = updatedMod.name ?? mod.name;
+      mod.author = updatedMod.author;
+      mod.description = updatedMod.description;
+      mod.pageUrl = updatedMod.pageUrl!;
+      mod.version = updatedMod.version!;
+    });
+  }
+
   return (
     <>
-      <ProfileForm modList={modList} />
-      <div className="grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 p-4">
-        {modList.map((mod) => (
-          <ModCard mod={mod} key={mod.id} />
-        ))}
-      </div>
+      {/* <ProfileForm modList={modList} /> */}
+      {manualMods.length > 0 ? (
+        <Tabs defaultValue="manual">
+          <TabsList className="grid w-md grid-cols-2 justify-self-center mb-5">
+            <TabsTrigger value="manual">Manual Mods</TabsTrigger>
+            <TabsTrigger value="nexus">Nexus Mods</TabsTrigger>
+          </TabsList>
+          <TabsContent value="manual">
+            <Alert>
+              <Info className="w-5 h-5" />
+              <AlertTitle>
+                There are {3} mods that need your attention
+              </AlertTitle>
+              <AlertDescription>
+                These are mods that you may have installed manually. It's not
+                necessary to fill in info, but it would make your list more
+                complete.
+              </AlertDescription>
+            </Alert>
+
+            <div className={gridCss}>
+              {manualMods.map((mod) => (
+                <ModCard mod={mod} key={mod.id} editMod={editManualMod} />
+              ))}
+            </div>
+          </TabsContent>
+          <TabsContent value="nexus" className={gridCss}>
+            {nexusMods.map((mod) => (
+              <ModCard mod={mod} key={mod.id} />
+            ))}
+          </TabsContent>
+        </Tabs>
+      ) : (
+        <div className={gridCss}>
+          {nexusMods.map((mod) => (
+            <ModCard mod={mod} key={mod.id} />
+          ))}
+        </div>
+      )}
     </>
   );
 }

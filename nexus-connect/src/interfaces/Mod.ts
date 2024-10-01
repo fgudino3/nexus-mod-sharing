@@ -12,3 +12,11 @@ export default interface Mod {
   fileSizeBytes?: number;
   isPatched?: boolean;
 }
+
+export interface ManualModUpsert {
+  name?: string;
+  version?: string;
+  author?: string;
+  description?: string;
+  pageUrl?: string;
+}
