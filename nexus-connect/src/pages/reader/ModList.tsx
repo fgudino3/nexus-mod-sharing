@@ -1,17 +1,38 @@
 import { useModState } from '@/states/modState';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { fetch, Body } from '@tauri-apps/api/http';
 import Mod, { ManualModUpsert } from '@/interfaces/Mod';
 import { useEffect, useState } from 'react';
 import { useUserState } from '@/states/userState';
 import { emit, listen, UnlistenFn } from '@tauri-apps/api/event';
-import { NexusButton } from '@/components/NexusButton';
 import Profile from '@/interfaces/Profile';
 import ModCard from '@/components/cards/ModCard';
 import { TabsList, Tabs, TabsContent, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Info } from 'lucide-react';
 import { useImmer } from 'use-immer';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import LoadingDialog from '@/components/dialogs/LoadingDialog';
 
 const gridCss =
   'grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 mt-5';
@@ -88,6 +109,8 @@ export default function ModList() {
 
   const manualMods = modList.filter((mod) => mod.id === undefined);
   const nexusMods = modList.filter((mod) => mod.id !== undefined);
+  const [touched, setTouched] = useState(new Set<string>());
+  const countToEdit = manualMods.length - touched.size;
 
   function editManualMod(order: string, updatedMod: ManualModUpsert) {
     setModList((mods) => {
@@ -102,23 +125,37 @@ export default function ModList() {
       mod.description = updatedMod.description;
       mod.pageUrl = updatedMod.pageUrl!;
       mod.version = updatedMod.version!;
+
+      setTouched((prev) => new Set(prev.add(order)));
     });
   }
 
   return (
     <>
-      {/* <ProfileForm modList={modList} /> */}
       {manualMods.length > 0 ? (
-        <Tabs defaultValue="manual">
-          <TabsList className="grid w-md grid-cols-2 justify-self-center mb-5">
-            <TabsTrigger value="manual">Manual Mods</TabsTrigger>
-            <TabsTrigger value="nexus">Nexus Mods</TabsTrigger>
-          </TabsList>
+        <Tabs defaultValue="manual" className="relative">
+          <div className="flex items-center justify-center space-x-10 mb-5 py-3 z-10 sticky top-0 bg-background">
+            <TabsList className="grid w-md grid-cols-2 justify-self-center">
+              <TabsTrigger value="manual">Manual Mods</TabsTrigger>
+              <TabsTrigger value="nexus">Nexus Mods</TabsTrigger>
+            </TabsList>
+            <ProfileForm modList={modList} />
+          </div>
           <TabsContent value="manual">
             <Alert>
               <Info className="w-5 h-5" />
               <AlertTitle>
-                There are {3} mods that need your attention
+                {countToEdit > 0 ? (
+                  <span>
+                    There {countToEdit === 1 ? 'is' : 'are'} {countToEdit} mod
+                    {countToEdit === 1 ? '' : 's'} that could use your attention
+                  </span>
+                ) : (
+                  <span>
+                    Looks like you've edited all the mods. Feel free to edit
+                    some more before creating the profile.
+                  </span>
+                )}
               </AlertTitle>
               <AlertDescription>
                 These are mods that you may have installed manually. It's not
@@ -140,29 +177,62 @@ export default function ModList() {
           </TabsContent>
         </Tabs>
       ) : (
-        <div className={gridCss}>
-          {nexusMods.map((mod) => (
-            <ModCard mod={mod} key={mod.id} />
-          ))}
-        </div>
+        <>
+          <div className="flex items-center justify-end space-x-10 mb-5 py-3 z-10 sticky top-0 bg-background">
+            <ProfileForm modList={modList} />
+          </div>
+          <div className={gridCss}>
+            {nexusMods.map((mod) => (
+              <ModCard mod={mod} key={mod.id} />
+            ))}
+          </div>
+        </>
       )}
     </>
   );
 }
 
-function ProfileForm({ modList }: { modList: Mod[] }) {
-  const jwt = useUserState((state) => state.userJwt);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+const formSchema = z.object({
+  name: z.string().max(128),
+  description: z.string().max(512).optional(),
+  game: z.string().max(128),
+});
 
-  async function createProfile() {
+function ProfileForm({ modList }: { modList: Mod[] }) {
+  const navigate = useNavigate();
+  const jwt = useUserState((state) => state.userJwt);
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: '',
+      description: '',
+      game: '',
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setOpen(false);
+    setLoading(true);
+    await createProfile(values.name, values.description ?? '', values.game);
+    setLoading(false);
+    navigate('/', { replace: true });
+  }
+
+  async function createProfile(
+    name: string,
+    description: string,
+    game: string
+  ) {
     await createMods();
 
     const { ok } = await fetch<Profile>('http://127.0.0.1:8000/profiles', {
       method: 'POST',
       body: Body.json({
         name,
-        game: 'Fallout New Vegas', // TODO: figure out how to get game name
+        game, // TODO: figure out how to get game name
         description,
         mods: modList
           .filter((mod) => mod.id !== undefined)
@@ -223,19 +293,71 @@ function ProfileForm({ modList }: { modList: Mod[] }) {
 
   return (
     <>
-      <input
-        type="text"
-        onChange={(e) => setName(e.currentTarget.value)}
-        placeholder="Profile name"
-        className="bg-gray-700 outline-none rounded-md mt-10 text-lg px-4 py-2"
-      />
-      <input
-        type="text"
-        onChange={(e) => setDescription(e.currentTarget.value)}
-        placeholder="description"
-        className="bg-gray-700 outline-none rounded-md mt-10 text-lg px-4 py-2"
-      />
-      <NexusButton onClick={createProfile}>Create Profile</NexusButton>
+      {loading && <LoadingDialog text="Creating your profile" />}
+      <Button className="!bg-primary" onClick={() => setOpen(true)}>
+        Create Profile
+      </Button>
+      <Dialog open={open} onOpenChange={(open) => setOpen(open)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create Profile</DialogTitle>
+            <DialogDescription>
+              Create a profile with the mods you have imported.
+            </DialogDescription>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-5 w-full"
+              >
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Mod Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Mod name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Description" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="game"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Game</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Skyrim" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex justify-end">
+                  <Button type="submit" className="!bg-primary">
+                    Create
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
