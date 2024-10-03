@@ -33,6 +33,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import LoadingDialog from '@/components/dialogs/LoadingDialog';
+import { useGameState } from '@/states/gameState';
+import { GameCombobox } from '@/components/forms/GameCombobox';
 
 const gridCss =
   'grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 mt-5';
@@ -107,6 +109,10 @@ export default function ModList() {
     );
   }
 
+  const game = modList
+    .find((mod) => mod.pageUrl !== undefined)
+    ?.pageUrl.split('/')[3];
+
   const manualMods = modList.filter((mod) => mod.id === undefined);
   const nexusMods = modList.filter((mod) => mod.id !== undefined);
   const [touched, setTouched] = useState(new Set<string>());
@@ -139,7 +145,7 @@ export default function ModList() {
               <TabsTrigger value="manual">Manual Mods</TabsTrigger>
               <TabsTrigger value="nexus">Nexus Mods</TabsTrigger>
             </TabsList>
-            <ProfileForm modList={modList} />
+            <ProfileForm modList={modList} game={game} />
           </div>
           <TabsContent value="manual">
             <Alert>
@@ -179,7 +185,7 @@ export default function ModList() {
       ) : (
         <>
           <div className="flex items-center justify-end space-x-10 mb-5 py-3 z-10 sticky top-0 bg-background">
-            <ProfileForm modList={modList} />
+            <ProfileForm modList={modList} game={game} />
           </div>
           <div className={gridCss}>
             {nexusMods.map((mod) => (
@@ -198,9 +204,10 @@ const formSchema = z.object({
   game: z.string().max(128),
 });
 
-function ProfileForm({ modList }: { modList: Mod[] }) {
+function ProfileForm({ modList, game }: { modList: Mod[]; game?: string }) {
   const navigate = useNavigate();
   const jwt = useUserState((state) => state.userJwt);
+  const games = useGameState((state) => state.games);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -212,6 +219,8 @@ function ProfileForm({ modList }: { modList: Mod[] }) {
       game: '',
     },
   });
+
+  form.setValue('game', games.get(game ?? '') ?? '');
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setOpen(false);
@@ -335,19 +344,7 @@ function ProfileForm({ modList }: { modList: Mod[] }) {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="game"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Game</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Skyrim" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <GameCombobox form={form} games={[...games.values()]} />
                 <div className="flex justify-end">
                   <Button type="submit" className="!bg-primary">
                     Create
