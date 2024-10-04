@@ -34,3 +34,24 @@ export default interface NexusMod {
     version: string | null;
   };
 }
+
+export interface NexusGame {
+  id: number;
+  name: string;
+  forum_url: string;
+  nexusmods_url: string;
+  genre: string;
+  file_count: number;
+  downloads: number;
+  domain_name: string;
+  approved_date: number;
+  file_views: number;
+  authors: number;
+  file_endorsements: number;
+  mods: number;
+  categories: {
+    category_id: number;
+    name: string;
+    parent_category: boolean;
+  }[];
+}

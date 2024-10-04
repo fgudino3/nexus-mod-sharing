@@ -1,11 +1,9 @@
 import { useModState } from '@/states/modState';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { fetch, Body } from '@tauri-apps/api/http';
 import Mod, { ManualModUpsert } from '@/interfaces/Mod';
 import { useEffect, useState } from 'react';
 import { useUserState } from '@/states/userState';
 import { emit, listen, UnlistenFn } from '@tauri-apps/api/event';
-import Profile from '@/interfaces/Profile';
 import ModCard from '@/components/cards/ModCard';
 import { TabsList, Tabs, TabsContent, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -35,6 +33,8 @@ import { Textarea } from '@/components/ui/textarea';
 import LoadingDialog from '@/components/dialogs/LoadingDialog';
 import { useGameState } from '@/states/gameState';
 import { GameCombobox } from '@/components/forms/GameCombobox';
+import useProfileApi from '@/hooks/useProfileApi';
+import useNexusApi from '@/hooks/useNexusApi';
 
 const gridCss =
   'grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 mt-5';
@@ -42,42 +42,39 @@ const gridCss =
 export default function ModList() {
   const { gameName } = useParams();
   const { pathname } = useLocation();
+  const { getNexusGames } = useNexusApi();
   const [modList, setModList] = useImmer<Mod[]>([]);
+  const [loading, setLoading] = useState(false);
   const vortexMods = useModState((state) =>
     state.vortexModdedGames.get(gameName!)
   );
   const moModList = useModState((state) => state.moModList);
   const apikey = useUserState((state) => state.nexusApiKey);
 
-  // if (!gameName) {
-  //   return (
-  //     <div>
-  //       <p>Page not found</p>
-  //     </div>
-  //   );
-  // }
-
   useEffect(() => {
     let listenPromise: Promise<UnlistenFn> | undefined;
 
+    getNexusGames();
+
     if (pathname.includes('vortex')) {
       setModList(vortexMods ?? []);
-      console.log(vortexMods);
     } else {
       const startTime = new Date();
-      const slicedList = moModList.slice(0);
-      const nexusModUrls = slicedList.map(
-        (mod) =>
-          `https://api.nexusmods.com/v1/games/starfield/mods/${mod.id}.json`
-      );
+      const nexusMods = moModList.filter((mod) => mod.pageUrl !== undefined);
+      const nexusModUrls = nexusMods.map((mod) => {
+        const game = mod.pageUrl.split('/')[3];
 
-      console.log(apikey, slicedList);
+        return `https://api.nexusmods.com/v1/games/${game}/mods/${mod.id}.json`;
+      });
 
       if (!apikey) {
         return; // TODO: error handling
       }
 
-      emit('process_mo_mods', { apikey, nexusModUrls, nexusMods: slicedList });
+      emit('process_mo_mods', { apikey, nexusModUrls, nexusMods });
+      setLoading(true);
+
+      setTimeout(() => setLoading(() => false), 11000); // fallback close loader
 
       listenPromise = listen('mods_processed', (event: any) => {
         console.log(
@@ -89,12 +86,9 @@ export default function ModList() {
             a.order!.localeCompare(b.order!)
           )
         );
+        setLoading(false);
       });
-      // getMoModMetadata(gameName!, apikey).then(() => {
-      //   setModList(() => moModList);
-      // });
     }
-    console.log('done with useEffect. listening for async event');
 
     return () => {
       listenPromise?.then((unlisten) => unlisten());
@@ -138,6 +132,9 @@ export default function ModList() {
 
   return (
     <>
+      {loading && (
+        <LoadingDialog text="Getting mod data from Nexus. Please wait a moment." />
+      )}
       {manualMods.length > 0 ? (
         <Tabs defaultValue="manual" className="relative">
           <div className="flex items-center justify-center space-x-10 mb-5 py-3 z-10 sticky top-0 bg-background">
@@ -206,8 +203,8 @@ const formSchema = z.object({
 
 function ProfileForm({ modList, game }: { modList: Mod[]; game?: string }) {
   const navigate = useNavigate();
-  const jwt = useUserState((state) => state.userJwt);
   const games = useGameState((state) => state.games);
+  const { createProfile } = useProfileApi();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -225,79 +222,14 @@ function ProfileForm({ modList, game }: { modList: Mod[]; game?: string }) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setOpen(false);
     setLoading(true);
-    await createProfile(values.name, values.description ?? '', values.game);
+    await createProfile(
+      modList,
+      values.name,
+      values.description ?? '',
+      values.game
+    );
     setLoading(false);
     navigate('/', { replace: true });
-  }
-
-  async function createProfile(
-    name: string,
-    description: string,
-    game: string
-  ) {
-    await createMods();
-
-    const { ok } = await fetch<Profile>('http://127.0.0.1:8000/profiles', {
-      method: 'POST',
-      body: Body.json({
-        name,
-        game, // TODO: figure out how to get game name
-        description,
-        mods: modList
-          .filter((mod) => mod.id !== undefined)
-          .map((mod) => ({
-            modId: mod.id,
-            version: mod.version,
-            order: mod.order,
-            installed: mod.installed,
-            isPatched: mod.isPatched,
-          })),
-        manualMods: modList
-          .filter((mod) => mod.id === undefined)
-          .map((mod) => ({
-            modName: mod.name,
-            order: mod.order,
-          })),
-      }),
-      headers: {
-        authorization: 'Bearer ' + jwt,
-      },
-    });
-  }
-
-  async function createMods() {
-    for (const mod of modList) {
-      if (mod.id) {
-        await fetch<Profile>('http://127.0.0.1:8000/mods', {
-          method: 'POST',
-          body: Body.json({
-            id: mod.id,
-            name: mod.name,
-            description: mod.description,
-            author: mod.author,
-            pageUrl: mod.pageUrl,
-            imageUrl: mod.imageUrl,
-            available: mod.available,
-          }),
-          headers: {
-            authorization: 'Bearer ' + jwt,
-          },
-        });
-      } else {
-        await fetch<Profile>('http://127.0.0.1:8000/mods/manual', {
-          method: 'POST',
-          body: Body.json({
-            name: mod.name,
-            description: mod.description,
-            author: mod.author,
-            pageUrl: mod.pageUrl,
-          }),
-          headers: {
-            authorization: 'Bearer ' + jwt,
-          },
-        });
-      }
-    }
   }
 
   return (

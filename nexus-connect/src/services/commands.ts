@@ -3,9 +3,14 @@ import { invoke } from '@tauri-apps/api';
 
 export default class Commands {
   public static async readModOrganizerList(): Promise<MoMod[] | null> {
-    const mods = await invoke<MoMod[] | null>('select_mo_csv_file');
+    try {
+      const mods = await invoke<MoMod[] | null>('select_mo_csv_file');
 
-    return mods;
+      return mods;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
   }
 
   public static async getVortexBackupPath(): Promise<string> {

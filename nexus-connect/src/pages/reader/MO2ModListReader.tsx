@@ -3,21 +3,20 @@ import { mapMoModsToMods } from '@/utils/mapping';
 import { useNavigate } from 'react-router-dom';
 import Commands from '@/services/commands';
 import { useModState } from '@/states/modState';
+import { toast } from 'sonner';
 
 export default function ModOrganizerListReader() {
   const setMoModList = useModState((state) => state.setMoModList);
   const navigate = useNavigate();
 
   async function selectMoCsvFile() {
-    try {
-      const mods = await Commands.readModOrganizerList();
+    const mods = await Commands.readModOrganizerList();
 
-      if (mods) {
-        setMoModList(mapMoModsToMods(mods));
-        navigate('/mod-manager/mo2/starfield');
-      }
-    } catch (error) {
-      console.error(error);
+    if (mods) {
+      setMoModList(mapMoModsToMods(mods));
+      navigate('/mod-manager/mo2/starfield');
+    } else {
+      toast.error('Missing required columns or incorrect format');
     }
   }
 
