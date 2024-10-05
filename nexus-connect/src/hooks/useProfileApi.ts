@@ -73,6 +73,22 @@ export default function useProfileApi() {
     }
   }
 
+  async function getProfile(id: string) {
+    const { data, ok } = await fetch<Profile>(
+      `http://127.0.0.1:8000/profiles/${id}`,
+      {
+        method: 'GET',
+        headers: {
+          authorization: 'Bearer ' + jwt,
+        },
+      }
+    );
+
+    if (ok) {
+      return data;
+    }
+  }
+
   async function createProfile(
     modList: Mod[],
     name: string,
@@ -144,5 +160,12 @@ export default function useProfileApi() {
     }
   }
 
-  return { getMyProfiles, getProfiles, createProfile, profiles, user };
+  return {
+    getMyProfiles,
+    getProfiles,
+    getProfile,
+    createProfile,
+    profiles,
+    user,
+  };
 }

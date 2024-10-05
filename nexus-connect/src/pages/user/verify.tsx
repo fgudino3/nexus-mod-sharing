@@ -1,5 +1,5 @@
 import { NexusButton } from '@/components/NexusButton';
-import { fetch, Body } from '@tauri-apps/api/http';
+import { fetch } from '@tauri-apps/api/http';
 import { useNavigate } from 'react-router-dom';
 import User from '@/interfaces/User';
 import { useState } from 'react';

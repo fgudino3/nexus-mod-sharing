@@ -10,6 +10,10 @@ import { presetShadcn } from 'unocss-preset-shadcn';
 
 export default defineConfig({
   transformers: [transformerDirectives()],
+  shortcuts: {
+    'sticky-header':
+      'sticky top-0 p-4 -mx-4 -mt-4 z-10 bg-background/80 backdrop-blur-sm backdrop-filter',
+  },
   presets: [
     presetWind({ dark: 'media' }),
     presetAnimations(),

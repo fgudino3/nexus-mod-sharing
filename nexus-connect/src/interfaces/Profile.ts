@@ -4,7 +4,7 @@ export default interface Profile {
   id: string;
   name: string;
   game: string;
-  modCount: string;
+  modCount: number;
   description: string;
   userId: string;
   mods: Mod[];

@@ -79,8 +79,12 @@ export default function Register() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    // register(values.email, values.password);
+    if (!nexusProfile) {
+      toast.error('Nexus profile not found.');
+      return;
+    }
+
+    register(nexusProfile, values.password);
   }
 
   useEffect(() => {

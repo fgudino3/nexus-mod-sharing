@@ -137,7 +137,7 @@ export default function ModList() {
       )}
       {manualMods.length > 0 ? (
         <Tabs defaultValue="manual" className="relative">
-          <div className="flex items-center justify-center space-x-10 mb-5 py-3 z-10 sticky top-0 bg-background">
+          <div className="flex items-center justify-center space-x-10 sticky-header">
             <TabsList className="grid w-md grid-cols-2 justify-self-center">
               <TabsTrigger value="manual">Manual Mods</TabsTrigger>
               <TabsTrigger value="nexus">Nexus Mods</TabsTrigger>
@@ -181,7 +181,7 @@ export default function ModList() {
         </Tabs>
       ) : (
         <>
-          <div className="flex items-center justify-end space-x-10 mb-5 py-3 z-10 sticky top-0 bg-background">
+          <div className="flex items-center justify-end space-x-10 sticky-header">
             <ProfileForm modList={modList} game={game} />
           </div>
           <div className={gridCss}>

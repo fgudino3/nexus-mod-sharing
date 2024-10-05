@@ -1,34 +1,22 @@
 import ModCard from '@/components/cards/ModCard';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
+import useProfileApi from '@/hooks/useProfileApi';
 import Profile from '@/interfaces/Profile';
-import { useUserState } from '@/states/userState';
-import { fetch } from '@tauri-apps/api/http';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 
 export default function ProfilePage() {
   const { profileId } = useParams();
-  const jwt = useUserState((state) => state.userJwt);
+  const { getProfile } = useProfileApi();
   const [profile, setProfile] = useState<Profile | null>(null);
 
-  async function getProfile() {
-    const { data, ok } = await fetch<Profile>(
-      `http://127.0.0.1:8000/profiles/${profileId}`,
-      {
-        method: 'GET',
-        headers: {
-          authorization: 'Bearer ' + jwt,
-        },
-      }
-    );
-
-    if (ok) {
-      console.log(data);
-      setProfile(() => data);
-    }
-  }
-
   useEffect(() => {
-    getProfile();
+    getProfile(profileId as string).then((profile) => {
+      if (profile) {
+        setProfile(profile);
+      }
+    });
   }, []);
 
   if (!profile) {
@@ -37,8 +25,26 @@ export default function ProfilePage() {
 
   return (
     <>
-      <h1>Name: {profile.name}</h1>
-      <p>Description: {profile.description}</p>
+      <div className="sticky-header flex flex-col items-start">
+        <div className="flex items-baseline space-x-2">
+          <h1 className="text-2xl">{profile.name}</h1>
+          <Separator orientation="vertical" />
+          <p className="opacity-50 text-sm">
+            {profile.modCount} {profile.modCount === 1 ? 'mod' : 'mods'}
+          </p>
+        </div>
+        <NavLink
+          to={`/user/${profile.userId}`}
+          className="flex items-center space-x-2"
+        >
+          <Avatar className="w-7 h-7 mt-1">
+            <AvatarImage src={profile.user.nexusProfileUrl} />
+            <AvatarFallback>Avatar</AvatarFallback>
+          </Avatar>
+          <p className="text-sm">{profile.user.nexusUsername}</p>
+        </NavLink>
+      </div>
+      <p className="opacity-50 text-sm">{profile.description}</p>
       <div className="grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 mt-5">
         {profile.mods.map((mod) => (
           <ModCard key={mod.id} mod={mod} />
