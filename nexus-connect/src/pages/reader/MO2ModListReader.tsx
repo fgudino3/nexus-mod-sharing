@@ -1,4 +1,4 @@
-import { NexusButton } from '@/components/NexusButton';
+import { Button } from '@/components/ui/button';
 import { mapMoModsToMods } from '@/utils/mapping';
 import { useNavigate } from 'react-router-dom';
 import Commands from '@/services/commands';
@@ -29,9 +29,9 @@ export default function ModOrganizerListReader() {
             Export a csv file from MO2. Make sure to check all columns for
             export.
           </h1>
-          <NexusButton onClick={selectMoCsvFile} className="mt-10">
+          <Button size="lg" onClick={selectMoCsvFile} className="mt-10">
             Open Mod List CSV File
-          </NexusButton>
+          </Button>
         </div>
       </div>
     </>

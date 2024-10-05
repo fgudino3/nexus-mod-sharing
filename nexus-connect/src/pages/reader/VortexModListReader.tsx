@@ -6,6 +6,7 @@ import MdiError from '~icons/mdi/error';
 import { NexusButton } from '@/components/NexusButton';
 import { useModState } from '@/states/modState';
 import Commands from '@/services/commands';
+import { Button } from '@/components/ui/button';
 
 const DEFAULT_VORTEX_BACKUP_PATH =
   'C:\\Users\\{user}\\AppData\\Roaming\\Vortex\\temp\\state_backups_full\\startup.json';
@@ -114,15 +115,15 @@ function GameSelectionList({
         <h3 className="text-2xl font-bold my-5">Select a game</h3>
         <div className="grid grid-cols-3 gap-6">
           {gameNames.map((gameName) => (
-            <NexusButton
+            <Button
+              size="lg"
               onClick={() => {
                 navigate('/mod-manager/vortex/' + gameName);
               }}
-              className="px-3 py-2 rounded-md bg-amber-600"
               key={gameName}
             >
               {gameName}
-            </NexusButton>
+            </Button>
           ))}
         </div>
       </>
