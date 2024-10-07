@@ -95,6 +95,7 @@ class ProfilePage:
     name: str
     game: str
     description: str
+    mod_count: int
     user_id: UUID
     user: ProfileUser
     mods: list[NcMod]
@@ -151,6 +152,7 @@ def profile_to_profile_page(profile: Profile) -> ProfilePage:
         id=profile.id,
         name=profile.name,
         game=profile.game,
+        mod_count=profile.mod_count,
         description=profile.description,
         user_id=profile.user_id,
         user=ProfileUser(profile.user.nexus_username, profile.user.nexus_profile_url),
