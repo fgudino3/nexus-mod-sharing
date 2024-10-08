@@ -20,12 +20,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Stepper from '@/components/ui/stepper';
-import { shell } from '@tauri-apps/api';
 import LoadingDialog from '@/components/dialogs/LoadingDialog';
 import useNexusApi from '@/hooks/useNexusApi';
 import { toast } from 'sonner';
 import useUserApi from '@/hooks/useUserApi';
 import { NexusProfile } from '@/interfaces/User';
+import { open } from '@tauri-apps/plugin-shell';
 
 // Minimum 7 characters, at least one uppercase letter, one lowercase letter, one number and one special character
 const passwordValidation = new RegExp(
@@ -137,7 +137,7 @@ export default function Register() {
                 <button
                   className="underline text-primary"
                   onClick={() =>
-                    shell.open('https://next.nexusmods.com/settings/api-keys')
+                    open('https://next.nexusmods.com/settings/api-keys')
                   }
                 >
                   API Keys page

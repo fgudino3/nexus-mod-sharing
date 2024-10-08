@@ -1,7 +1,6 @@
 import { useUserState } from '@/states/userState';
-import { fetch, Body } from '@tauri-apps/api/http';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { UserDTO } from '@/interfaces/User';
+import { UserDTO, LoginSchema } from '@/interfaces/User';
 import { extractFromUserDTO } from '@/utils/mapping';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -24,6 +23,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import CenteredContent from '@/components/layouts/centered-content';
+import { ConnectApi } from '@/utils/request';
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -49,14 +49,11 @@ export default function Login() {
   }
 
   async function login(email: string, password: string) {
-    const { data, headers } = await fetch<UserDTO>(
+    const { data, headers } = await ConnectApi.post<LoginSchema, UserDTO>(
       'http://127.0.0.1:8000/login',
       {
-        method: 'POST',
-        body: Body.json({
-          email,
-          password,
-        }),
+        email,
+        password,
       }
     );
 
@@ -65,7 +62,7 @@ export default function Login() {
     await saveUser(user);
     setUserConnections(following, followers);
 
-    const jwt = headers.authorization.split(' ')[1];
+    const jwt = (headers as any).authorization.split(' ')[1];
 
     await saveJwt(jwt);
 

@@ -13,3 +13,20 @@ export default interface Profile {
     nexusProfileUrl: string;
   };
 }
+
+export interface ProfileCreate {
+  name: string;
+  game: string;
+  description: string;
+  mods: {
+    modId: number;
+    version: string;
+    order?: string;
+    installed: boolean;
+    isPatched: boolean;
+  }[];
+  manualMods: {
+    modName: string;
+    order?: string;
+  }[];
+}

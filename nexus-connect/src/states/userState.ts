@@ -1,5 +1,5 @@
 import User, { UserBase } from '@/interfaces/User';
-import { Store } from 'tauri-plugin-store-api';
+import { createStore, Store } from '@tauri-apps/plugin-store';
 import { create } from 'zustand';
 
 interface UserState {
@@ -21,13 +21,15 @@ const NEXUS_API_KEY = 'NEXUS_API_KEY';
 const USER_JWT = 'USER_JWT';
 const USER_DATA = 'USER_DATA';
 
+const store = await createStore('.settings.dat');
+
 export const useUserState = create<UserState>()((set, get) => ({
   nexusApiKey: '',
   userJwt: '',
   user: null,
   following: [],
   followers: [],
-  store: new Store('.settings.dat'),
+  store,
   setUserConnections(following: UserBase[], followers: UserBase[]) {
     set({ following, followers });
   },

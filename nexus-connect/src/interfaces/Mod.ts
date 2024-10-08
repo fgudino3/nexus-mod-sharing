@@ -13,6 +13,16 @@ export default interface Mod {
   isPatched?: boolean;
 }
 
+export interface ModUpsert {
+  id: number;
+  name: string;
+  pageUrl: string;
+  author?: string;
+  description?: string;
+  imageUrl?: string;
+  available: boolean;
+}
+
 export interface ManualModUpsert {
   name?: string;
   version?: string;

@@ -1,14 +1,18 @@
 use crate::models::MoMod;
-use std::{fs::File, path::PathBuf};
-use tauri::api::dialog::blocking::FileDialogBuilder;
+use std::fs::File;
+use tauri::AppHandle;
+use tauri_plugin_dialog::DialogExt;
+use tauri_plugin_fs::FilePath;
 
 extern crate csv;
 
 #[tauri::command]
-pub async fn select_mo_csv_file() -> Result<Option<Vec<MoMod>>, String> {
-    let file_path = FileDialogBuilder::new()
+pub async fn select_mo_csv_file(app: AppHandle) -> Result<Option<Vec<MoMod>>, String> {
+    let file_path = app
+        .dialog()
+        .file()
         .add_filter("CSV", &["csv", "txt"])
-        .pick_file();
+        .blocking_pick_file();
 
     match file_path {
         Some(path) => get_mods_from_csv(path),
@@ -16,8 +20,8 @@ pub async fn select_mo_csv_file() -> Result<Option<Vec<MoMod>>, String> {
     }
 }
 
-fn get_mods_from_csv(path: PathBuf) -> Result<Option<Vec<MoMod>>, String> {
-    let file = File::open(path).map_err(|_| "Selected file does not exist")?;
+fn get_mods_from_csv(path: FilePath) -> Result<Option<Vec<MoMod>>, String> {
+    let file = File::open(path.into_path().unwrap()).map_err(|_| "Selected file does not exist")?;
 
     parse_mods_from_csv(file)
 }

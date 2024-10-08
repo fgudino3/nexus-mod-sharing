@@ -1,5 +1,5 @@
 import MoMod from '@/interfaces/MoMod';
-import { invoke } from '@tauri-apps/api';
+import { invoke } from '@tauri-apps/api/core';
 
 export default class Commands {
   public static async readModOrganizerList(): Promise<MoMod[] | null> {

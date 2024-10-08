@@ -2,7 +2,7 @@ import { NexusGame } from '@/interfaces/NexusMod';
 import { NexusProfile } from '@/interfaces/User';
 import { useGameState } from '@/states/gameState';
 import { useUserState } from '@/states/userState';
-import { fetch } from '@tauri-apps/api/http';
+import { NexusApi } from '@/utils/request';
 
 export default function useNexusApi() {
   const apiKey = useUserState((state) => state.nexusApiKey);
@@ -10,14 +10,9 @@ export default function useNexusApi() {
   const initNexusGames = useGameState((state) => state.initGames);
 
   async function getNexusProfileAsync(apikey: string) {
-    const { data, ok } = await fetch<NexusProfile>(
+    const { ok, data } = await NexusApi.get<NexusProfile>(
       'https://api.nexusmods.com/v1/users/validate.json',
-      {
-        method: 'GET',
-        headers: {
-          apikey,
-        },
-      }
+      apikey
     );
 
     if (ok) {
@@ -30,14 +25,9 @@ export default function useNexusApi() {
       return;
     }
 
-    const { data, ok } = await fetch<NexusGame[]>(
+    const { data, ok } = await NexusApi.get<NexusGame[]>(
       'https://api.nexusmods.com/v1/games.json',
-      {
-        method: 'GET',
-        headers: {
-          apikey: apiKey,
-        },
-      }
+      apiKey
     );
 
     if (ok) {

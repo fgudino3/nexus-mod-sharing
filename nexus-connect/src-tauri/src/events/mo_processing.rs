@@ -4,7 +4,7 @@ use crate::models::{
 };
 use futures::{stream, StreamExt};
 use reqwest;
-use tauri::{async_runtime, AppHandle, Manager};
+use tauri::{async_runtime, AppHandle, Emitter};
 
 pub async fn handle_mo_mod_processing(
     handle: &AppHandle,

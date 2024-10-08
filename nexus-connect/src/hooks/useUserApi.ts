@@ -1,7 +1,11 @@
-import { fetch, Body } from '@tauri-apps/api/http';
-import User, { NexusProfile, UserDTO } from '@/interfaces/User';
+import User, {
+  NexusProfile,
+  RegistrationSchema,
+  UserDTO,
+} from '@/interfaces/User';
 import { useNavigate } from 'react-router-dom';
 import { useUserState } from '@/states/userState';
+import { ConnectApi } from '@/utils/request';
 
 export default function useUserApi() {
   const navigate = useNavigate();
@@ -13,15 +17,15 @@ export default function useUserApi() {
   }
 
   async function register(profile: NexusProfile, password: string) {
-    const { ok } = await fetch<User>('http://127.0.0.1:8000/register', {
-      method: 'POST',
-      body: Body.json({
+    const { ok } = await ConnectApi.post<RegistrationSchema, User>(
+      'http://127.0.0.1:8000/register',
+      {
         email: profile.email,
         nexusUsername: profile.name,
         nexusProfileUrl: profile.profile_url,
         password,
-      }),
-    });
+      }
+    );
 
     if (ok) {
       navigate('/verify');
@@ -29,38 +33,23 @@ export default function useUserApi() {
   }
 
   async function getConnections() {
-    const { data: following } = await fetch<UserDTO[]>(
+    const { data: following } = await ConnectApi.get<UserDTO[]>(
       'http://127.0.0.1:8000/users/following',
-      {
-        method: 'GET',
-        headers: {
-          authorization: 'Bearer ' + jwt,
-        },
-      }
+      jwt
     );
 
-    const { data: followers } = await fetch<UserDTO[]>(
+    const { data: followers } = await ConnectApi.get<UserDTO[]>(
       'http://127.0.0.1:8000/users/following',
-      {
-        method: 'GET',
-        headers: {
-          authorization: 'Bearer ' + jwt,
-        },
-      }
+      jwt
     );
 
     setUserConnections(following, followers);
   }
 
   async function follow(userId: string) {
-    const { data, ok } = await fetch<UserDTO>(
+    const { data, ok } = await ConnectApi.postNoBody<UserDTO>(
       'http://127.0.0.1:8000/users/follow/' + userId,
-      {
-        method: 'POST',
-        headers: {
-          authorization: 'Bearer ' + jwt,
-        },
-      }
+      jwt
     );
 
     if (ok) {
@@ -69,14 +58,9 @@ export default function useUserApi() {
   }
 
   async function unfollow(userId: string) {
-    const { data, ok } = await fetch<UserDTO>(
+    const { data, ok } = await ConnectApi.postNoBody<UserDTO>(
       'http://127.0.0.1:8000/users/unfollow/' + userId,
-      {
-        method: 'POST',
-        headers: {
-          authorization: 'Bearer ' + jwt,
-        },
-      }
+      jwt
     );
 
     if (ok) {

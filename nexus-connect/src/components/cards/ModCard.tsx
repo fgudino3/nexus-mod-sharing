@@ -1,4 +1,3 @@
-import { shell } from '@tauri-apps/api';
 import Mod, { ManualModUpsert } from '@/interfaces/Mod';
 import { Button } from '../ui/button';
 import { ExternalLink } from 'lucide-react';
@@ -23,6 +22,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Textarea } from '../ui/textarea';
 import { useState } from 'react';
+import { open } from '@tauri-apps/plugin-shell';
 
 interface ModCardProps {
   mod: Mod;
@@ -188,7 +188,7 @@ export default function ModCard({ mod, editMod }: ModCardProps) {
           </>
         ) : (
           <Button
-            onClick={() => shell.open(mod.pageUrl)}
+            onClick={() => open(mod.pageUrl)}
             className="flex w-full space-x-2"
           >
             <span>Visit Nexus Page</span>

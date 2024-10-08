@@ -2,45 +2,28 @@
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../dist"
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420"
   },
-  "package": {
-    "productName": "nexus-connect",
-    "version": "0.1.0"
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
   },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "path": {
-        "all": true
-      },
-      "fs": {
-        "all": false,
-        "exists": true,
-        "readFile": true,
-        "scope": ["**"]
-      },
-      "shell": {
-        "all": false,
-        "execute": false,
-        "open": true,
-        "scope": [],
-        "sidecar": false
-      },
-      "dialog": {
-        "all": false,
-        "ask": false,
-        "confirm": false,
-        "message": false,
-        "open": true,
-        "save": false
-      },
-      "http": {
-        "all": false,
-        "request": true,
-        "scope": ["https://*", "http://127.0.0.1:8000/*"]
-      }
+  "productName": "nexus-connect",
+  "mainBinaryName": "nexus-connect",
+  "version": "0.1.0",
+  "identifier": "com.nexus-connect.app",
+  "plugins": {},
+  "app": {
+    "security": {
+      "csp": null
     },
     "windows": [
       {
@@ -50,21 +33,6 @@
         "minWidth": 1200,
         "minHeight": 700
       }
-    ],
-    "security": {
-      "csp": null
-    },
-    "bundle": {
-      "active": true,
-      "targets": "all",
-      "identifier": "com.nexus-connect.app",
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ]
-    }
+    ]
   }
 }

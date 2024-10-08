@@ -1,10 +1,10 @@
-import { Body, fetch } from '@tauri-apps/api/http';
+import Mod, { ManualModUpsert, ModUpsert } from '@/interfaces/Mod';
+import Profile, { ProfileCreate } from '@/interfaces/Profile';
 import OffsetPagination from '@/interfaces/OffsetPagination';
 import { useUserState } from '@/states/userState';
-import Profile from '@/interfaces/Profile';
-import { useState } from 'react';
 import { UserBase } from '@/interfaces/User';
-import Mod from '@/interfaces/Mod';
+import { ConnectApi } from '@/utils/request';
+import { useState } from 'react';
 
 export default function useProfileApi() {
   const jwt = useUserState((state) => state.userJwt);
@@ -25,17 +25,12 @@ export default function useProfileApi() {
       return;
     }
 
-    const { data, ok } = await fetch<OffsetPagination<Profile>>(
+    const { data, ok } = await ConnectApi.get<OffsetPagination<Profile>>(
       'http://127.0.0.1:8000/profiles/me',
+      jwt,
       {
-        method: 'GET',
-        headers: {
-          authorization: 'Bearer ' + jwt,
-        },
-        query: {
-          pageSize: pageSize.toString(),
-          currentPage: currentPage.toString(),
-        },
+        pageSize: pageSize.toString(),
+        currentPage: currentPage.toString(),
       }
     );
 
@@ -49,18 +44,13 @@ export default function useProfileApi() {
       return;
     }
 
-    const { data, ok } = await fetch<OffsetPagination<Profile>>(
+    const { data, ok } = await ConnectApi.get<OffsetPagination<Profile>>(
       'http://127.0.0.1:8000/profiles',
+      jwt,
       {
-        method: 'GET',
-        headers: {
-          authorization: 'Bearer ' + jwt,
-        },
-        query: {
-          user_id: userId,
-          pageSize: pageSize.toString(),
-          currentPage: currentPage.toString(),
-        },
+        user_id: userId,
+        pageSize: pageSize.toString(),
+        currentPage: currentPage.toString(),
       }
     );
 
@@ -74,14 +64,9 @@ export default function useProfileApi() {
   }
 
   async function getProfile(id: string) {
-    const { data, ok } = await fetch<Profile>(
+    const { data, ok } = await ConnectApi.get<Profile>(
       `http://127.0.0.1:8000/profiles/${id}`,
-      {
-        method: 'GET',
-        headers: {
-          authorization: 'Bearer ' + jwt,
-        },
-      }
+      jwt
     );
 
     if (ok) {
@@ -97,9 +82,9 @@ export default function useProfileApi() {
   ) {
     await createMods(modList);
 
-    await fetch<Profile>('http://127.0.0.1:8000/profiles', {
-      method: 'POST',
-      body: Body.json({
+    await ConnectApi.post<ProfileCreate, Profile>(
+      'http://127.0.0.1:8000/profiles',
+      {
         name,
         game,
         description,
@@ -110,7 +95,7 @@ export default function useProfileApi() {
             version: mod.version,
             order: mod.order,
             installed: mod.installed,
-            isPatched: mod.isPatched,
+            isPatched: mod.isPatched ?? false,
           })),
         manualMods: modList
           .filter((mod) => mod.id === undefined)
@@ -118,19 +103,17 @@ export default function useProfileApi() {
             modName: mod.name,
             order: mod.order,
           })),
-      }),
-      headers: {
-        authorization: 'Bearer ' + jwt,
       },
-    });
+      jwt
+    );
   }
 
   async function createMods(modList: Mod[]) {
     for (const mod of modList) {
       if (mod.id) {
-        await fetch<Profile>('http://127.0.0.1:8000/mods', {
-          method: 'POST',
-          body: Body.json({
+        await ConnectApi.post<ModUpsert, Profile>(
+          'http://127.0.0.1:8000/mods',
+          {
             id: mod.id,
             name: mod.name,
             description: mod.description,
@@ -138,24 +121,20 @@ export default function useProfileApi() {
             pageUrl: mod.pageUrl,
             imageUrl: mod.imageUrl,
             available: mod.available,
-          }),
-          headers: {
-            authorization: 'Bearer ' + jwt,
           },
-        });
+          jwt
+        );
       } else {
-        await fetch<Profile>('http://127.0.0.1:8000/mods/manual', {
-          method: 'POST',
-          body: Body.json({
+        await ConnectApi.post<ManualModUpsert, Profile>(
+          'http://127.0.0.1:8000/mods/manual',
+          {
             name: mod.name,
             description: mod.description,
             author: mod.author,
             pageUrl: mod.pageUrl,
-          }),
-          headers: {
-            authorization: 'Bearer ' + jwt,
           },
-        });
+          jwt
+        );
       }
     }
   }

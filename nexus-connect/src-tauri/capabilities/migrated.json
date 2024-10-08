@@ -1,0 +1,37 @@
+{
+  "identifier": "migrated",
+  "description": "permissions that were migrated from v1",
+  "local": true,
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "fs:allow-read-file",
+    "fs:allow-exists",
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        "**"
+      ]
+    },
+    "shell:allow-open",
+    "dialog:allow-open",
+    {
+      "identifier": "http:default",
+      "allow": [
+        {
+          "url": "https://*/"
+        },
+        {
+          "url": "http://127.0.0.1:8000/*"
+        }
+      ]
+    },
+    "shell:default",
+    "fs:default",
+    "http:default",
+    "dialog:default",
+    "store:default"
+  ]
+}

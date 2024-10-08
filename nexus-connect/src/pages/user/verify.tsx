@@ -1,8 +1,8 @@
 import { NexusButton } from '@/components/NexusButton';
-import { fetch } from '@tauri-apps/api/http';
 import { useNavigate } from 'react-router-dom';
 import User from '@/interfaces/User';
 import { useState } from 'react';
+import { ConnectApi } from '@/utils/request';
 
 export default function Verify() {
   const navigate = useNavigate();
@@ -10,12 +10,9 @@ export default function Verify() {
   const [verified, setVerified] = useState(false);
 
   async function verifyAccount() {
-    const { ok } = await fetch<User>('http://127.0.0.1:8000/verify', {
-      method: 'POST',
-      query: {
-        token,
-      },
-    });
+    const { ok } = await ConnectApi.postNoBody<User>(
+      'http://127.0.0.1:8000/verify?token=' + token
+    );
 
     if (ok) {
       setVerified(() => true);

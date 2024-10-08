@@ -1,12 +1,13 @@
 import MdiCheckboxMarkedCircle from '~icons/mdi/checkbox-marked-circle';
 import { useNavigate } from 'react-router-dom';
-import { fs } from '@tauri-apps/api';
+import {} from '@tauri-apps/api';
 import { useState, useEffect } from 'react';
 import MdiError from '~icons/mdi/error';
 import { NexusButton } from '@/components/NexusButton';
 import { useModState } from '@/states/modState';
 import Commands from '@/services/commands';
 import { Button } from '@/components/ui/button';
+import { readTextFile } from '@tauri-apps/plugin-fs';
 
 const DEFAULT_VORTEX_BACKUP_PATH =
   'C:\\Users\\{user}\\AppData\\Roaming\\Vortex\\temp\\state_backups_full\\startup.json';
@@ -41,7 +42,7 @@ export default function VortexModListReader() {
     setLoading(() => true);
 
     try {
-      const jsonString = await fs.readTextFile(path);
+      const jsonString = await readTextFile(path);
 
       setBackupFileExists(() => true);
 
