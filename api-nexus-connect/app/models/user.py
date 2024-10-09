@@ -7,7 +7,7 @@ from .role import Role
 
 from litestar_users.adapter.sqlalchemy.mixins import SQLAlchemyUserMixin
 
-from litestar.contrib.sqlalchemy.base import UUIDBase
+from litestar.contrib.sqlalchemy.base import UUIDAuditBase
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO, SQLAlchemyDTOConfig
 from litestar.dto.config import DTOConfig
 from litestar.dto import DataclassDTO
@@ -21,8 +21,8 @@ class Following(AssociationBase):
     followed_id: Mapped[UUID] = mapped_column(ForeignKey("user.id"), primary_key=True)
 
 
-class User(UUIDBase, SQLAlchemyUserMixin):
-    nexus_username: Mapped[str] = mapped_column(String(20))
+class User(UUIDAuditBase, SQLAlchemyUserMixin):
+    nexus_username: Mapped[str] = mapped_column(String(128), unique=True)
     nexus_profile_url: Mapped[str] = mapped_column(String(128))
     roles: Mapped[list[Role]] = relationship(secondary="user_role", lazy="selectin")
     following: Mapped[list["User"]] = relationship(
@@ -47,6 +47,12 @@ class UserRegistrationSchema:
     password: str
     nexus_username: str
     nexus_profile_url: str
+
+
+@dataclass
+class UserLoginSchema:
+    nexus_username: str
+    password: str
 
 
 class UserRegistrationDTO(DataclassDTO[UserRegistrationSchema]):

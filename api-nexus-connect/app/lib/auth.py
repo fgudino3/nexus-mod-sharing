@@ -4,6 +4,7 @@ from app.services.user_service import UserService
 from app.settings import AppConfig
 from app.models.user import (
     User,
+    UserLoginSchema,
     UserReadDTO,
     UserUpdateDTO,
     UserRegistrationDTO,
@@ -60,5 +61,7 @@ litestar_users = LitestarUsersPlugin(
         verification_handler_config=VerificationHandlerConfig(),
         auto_commit_transactions=True,
         default_token_expiration=timedelta(weeks=52),
+        authentication_request_schema=UserLoginSchema,
+        user_auth_identifier="nexus_username",
     )
 )
