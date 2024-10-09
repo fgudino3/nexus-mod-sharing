@@ -32,10 +32,9 @@ export default function UserPage({ user, profiles, isMe }: UserPageProps) {
           </Avatar>
           <div>
             <p className="font-semibold text-3xl">{user.nexusUsername}</p>
-            {/* TODO add auditbase to user to get created date */}
             <p className="opacity-50 text-sm flex items-center space-x-2 mt-1">
               <Calendar size={16} />
-              <span>Joined {format(new Date(), 'MMMM yyyy')}</span>
+              <span>Joined {format(user.createdAt, 'MMMM yyyy')}</span>
             </p>
             <div className="text-sm flex items-center space-x-5 mt-3">
               <p className="space-x-1">

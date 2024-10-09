@@ -1,5 +1,7 @@
 export interface UserBase {
   id: string;
+  createdAt: Date;
+  updatedAt: Date;
   nexusUsername: string;
   nexusProfileUrl: string;
 }
@@ -16,7 +18,7 @@ export interface RegistrationSchema {
 }
 
 export interface LoginSchema {
-  email: string;
+  nexus_username: string;
   password: string;
 }
 

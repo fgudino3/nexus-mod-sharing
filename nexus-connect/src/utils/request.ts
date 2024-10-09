@@ -3,7 +3,7 @@ import { fetch } from '@tauri-apps/plugin-http';
 interface ApiResponse<T> {
   data: T;
   ok: boolean;
-  headers: Headers;
+  jwt?: string;
 }
 
 export class ConnectApi {
@@ -21,7 +21,7 @@ export class ConnectApi {
 
     const data = await response.json();
 
-    return { ok: response.ok, data, headers: response.headers };
+    return { ok: response.ok, data };
   }
 
   static async post<BodyT, ReturnT>(
@@ -39,9 +39,16 @@ export class ConnectApi {
       body: JSON.stringify(body),
     });
 
+    const headerMap = new Map(response.headers.entries());
+    let jwtResponse: string | undefined;
+
+    if (headerMap.has('authorization')) {
+      jwtResponse = headerMap.get('authorization')?.split(' ')[1];
+    }
+
     const data = await response.json();
 
-    return { ok: response.ok, data, headers: response.headers };
+    return { ok: response.ok, data, jwt: jwtResponse };
   }
 
   static async postNoBody<ReturnT>(
@@ -59,7 +66,7 @@ export class ConnectApi {
 
     const data = await response.json();
 
-    return { ok: response.ok, data, headers: response.headers };
+    return { ok: response.ok, data };
   }
 }
 
@@ -74,7 +81,7 @@ export class NexusApi {
 
     const data = await response.json();
 
-    return { ok: response.ok, data, headers: response.headers };
+    return { ok: response.ok, data };
   }
 }
 

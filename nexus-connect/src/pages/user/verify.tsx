@@ -1,8 +1,10 @@
-import { NexusButton } from '@/components/NexusButton';
+import CenteredContent from '@/components/layouts/centered-content';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { ConnectApi } from '@/utils/request';
 import User from '@/interfaces/User';
 import { useState } from 'react';
-import { ConnectApi } from '@/utils/request';
 
 export default function Verify() {
   const navigate = useNavigate();
@@ -23,27 +25,28 @@ export default function Verify() {
     return (
       <div>
         <h1 className="text-2xl font-bold">Account verified!</h1>
-        <NexusButton onClick={() => navigate('/login')} className="mt-10">
+        <Button onClick={() => navigate('/login')} className="mt-10">
           Go to login
-        </NexusButton>
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-full">
-      <h1 className="text-2xl font-bold">
+    <CenteredContent>
+      <h1 className="text-xl font-bold">
         Check your email for a verification code. Copy and paste it here to
         verify your account.
       </h1>
-      <div className="space-x-2">
-        <input
-          type="text"
+      <div className="mt-15 min-w-md space-y-5">
+        <Textarea
+          placeholder="Token"
           onChange={(e) => setToken(e.currentTarget.value)}
-          className="bg-gray-700 outline-none rounded-md mt-10 text-lg px-4 py-2"
         />
-        <NexusButton onClick={verifyAccount}>Verify</NexusButton>
+        <div className="flex justify-end">
+          <Button onClick={verifyAccount}>Verify account</Button>
+        </div>
       </div>
-    </div>
+    </CenteredContent>
   );
 }

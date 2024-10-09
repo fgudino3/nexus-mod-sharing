@@ -10,6 +10,8 @@ export function extractFromUserDTO(
     email: userDTO.email,
     nexusUsername: userDTO.nexusUsername,
     nexusProfileUrl: userDTO.nexusProfileUrl,
+    createdAt: new Date(userDTO.createdAt),
+    updatedAt: new Date(userDTO.updatedAt),
   };
 
   return [user, userDTO.following, userDTO.followers];

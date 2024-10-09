@@ -56,10 +56,16 @@ export default function useProfileApi() {
 
     if (ok) {
       updatePage(data);
-      setUser({
-        id: data.items[0].userId,
-        ...data.items[0].user,
-      });
+
+      if (data.items.length > 0) {
+        setUser({
+          id: data.items[0].userId,
+          createdAt: new Date(data.items[0].user.createdAt),
+          updatedAt: new Date(data.items[0].user.updatedAt),
+          nexusUsername: data.items[0].user.nexusUsername,
+          nexusProfileUrl: data.items[0].user.nexusProfileUrl,
+        });
+      }
     }
   }
 

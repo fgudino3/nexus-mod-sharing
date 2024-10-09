@@ -26,7 +26,7 @@ import CenteredContent from '@/components/layouts/centered-content';
 import { ConnectApi } from '@/utils/request';
 
 const formSchema = z.object({
-  email: z.string().email(),
+  nexusUsername: z.string().max(128),
   password: z.string(),
 });
 
@@ -39,20 +39,20 @@ export default function Login() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
+      nexusUsername: '',
       password: '',
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    login(values.email, values.password);
+    login(values.nexusUsername, values.password);
   }
 
-  async function login(email: string, password: string) {
-    const { data, headers } = await ConnectApi.post<LoginSchema, UserDTO>(
+  async function login(nexusUsername: string, password: string) {
+    const { data, jwt } = await ConnectApi.post<LoginSchema, UserDTO>(
       'http://127.0.0.1:8000/login',
       {
-        email,
+        nexus_username: nexusUsername,
         password,
       }
     );
@@ -62,9 +62,9 @@ export default function Login() {
     await saveUser(user);
     setUserConnections(following, followers);
 
-    const jwt = (headers as any).authorization.split(' ')[1];
-
-    await saveJwt(jwt);
+    if (jwt) {
+      await saveJwt(jwt);
+    }
 
     navigate('/');
   }
@@ -83,14 +83,13 @@ export default function Login() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
                 control={form.control}
-                name="email"
+                name="nexusUsername"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Nexus Username</FormLabel>
                     <FormControl>
                       <Input
-                        type="email"
-                        placeholder="example@test.com"
+                        placeholder="Username from your Nexus account"
                         {...field}
                       />
                     </FormControl>

@@ -11,6 +11,8 @@ export default interface Profile {
   user: {
     nexusUsername: string;
     nexusProfileUrl: string;
+    createdAt: Date;
+    updatedAt: Date;
   };
 }
 

@@ -86,6 +86,7 @@ export const useUserState = create<UserState>()((set, get) => ({
 
     await store.delete(USER_JWT);
     await store.delete(USER_DATA);
+    await store.save();
 
     set({ userJwt: '', user: null });
     set({ followers: [], following: [] });
