@@ -1,4 +1,5 @@
 from app.controllers.user_controller import UserController
+from app.settings import AppConfig
 from .controllers.mod_controller import ModController
 from .controllers.profile_controller import ModProfileController
 from .lib.providers import provide_limit_offset_pagination
@@ -17,7 +18,7 @@ from litestar import Litestar
 
 session_config = AsyncSessionConfig(expire_on_commit=False)
 sqlalchemy_config = SQLAlchemyAsyncConfig(
-    connection_string="sqlite+aiosqlite:///test.sqlite",
+    connection_string=AppConfig.DATABASE_URL,
     session_config=session_config,
 )  # Create 'db_session' dependency.
 sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
@@ -32,7 +33,7 @@ async def on_startup() -> None:
 app = Litestar(
     on_startup=[on_startup],
     route_handlers=[UserController, ModController, ModProfileController],
-    plugins=[SQLAlchemyInitPlugin(config=sqlalchemy_config), litestar_users],
+    plugins=[sqlalchemy_plugin, litestar_users],
     dependencies={"limit_offset": Provide(provide_limit_offset_pagination)},
     listeners=[send_verify_token_email_handler],
 )
