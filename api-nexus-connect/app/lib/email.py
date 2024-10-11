@@ -10,7 +10,7 @@ async def send_email(to_email: str, subject: str, content: str) -> None:
     message = EmailMessage()
     message["Subject"] = subject
     message["From"] = AppConfig.GMAIL_EMAIL
-    message["To"] = AppConfig.GMAIL_EMAIL  # TODO: replace with to_email
+    message["To"] = to_email
     message.set_content(content)
 
     await send(
