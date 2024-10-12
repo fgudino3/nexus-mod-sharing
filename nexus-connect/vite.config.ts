@@ -1,3 +1,4 @@
+import topLevelAwait from 'vite-plugin-top-level-await';
 import oxlintPlugin from 'vite-plugin-oxlint';
 import react from '@vitejs/plugin-react';
 import Icons from 'unplugin-icons/vite';
@@ -12,6 +13,12 @@ export default defineConfig(async () => ({
     oxlintPlugin({ path: 'src' }),
     Icons({ compiler: 'jsx', jsx: 'react' }),
     UnoCSS(),
+    topLevelAwait({
+      // The export name of top-level await promise for each chunk module
+      promiseExportName: '__tla',
+      // The function to generate import names of top-level await promise in each chunk module
+      promiseImportName: (i) => `__tla_${i}`,
+    }),
   ],
 
   resolve: {
