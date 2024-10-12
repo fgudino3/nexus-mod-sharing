@@ -2,18 +2,14 @@
   "identifier": "migrated",
   "description": "permissions that were migrated from v1",
   "local": true,
-  "windows": [
-    "main"
-  ],
+  "windows": ["main"],
   "permissions": [
     "core:default",
     "fs:allow-read-file",
     "fs:allow-exists",
     {
       "identifier": "fs:scope",
-      "allow": [
-        "**"
-      ]
+      "allow": ["**"]
     },
     "shell:allow-open",
     "dialog:allow-open",
@@ -21,7 +17,7 @@
       "identifier": "http:default",
       "allow": [
         {
-          "url": "https://*/"
+          "url": "https://api-nexus-connect.onrender.com"
         },
         {
           "url": "http://127.0.0.1:8000/*"

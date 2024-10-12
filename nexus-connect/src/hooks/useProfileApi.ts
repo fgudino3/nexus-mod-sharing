@@ -5,6 +5,7 @@ import { useUserState } from '@/states/userState';
 import { UserBase } from '@/interfaces/User';
 import { ConnectApi } from '@/utils/request';
 import { useState } from 'react';
+import { BASE_URL } from '@/utils/constants';
 
 export default function useProfileApi() {
   const jwt = useUserState((state) => state.userJwt);
@@ -26,7 +27,7 @@ export default function useProfileApi() {
     }
 
     const { data, ok } = await ConnectApi.get<OffsetPagination<Profile>>(
-      'http://127.0.0.1:8000/profiles/me',
+      `${BASE_URL}/profiles/me`,
       jwt,
       {
         pageSize: pageSize.toString(),
@@ -45,7 +46,7 @@ export default function useProfileApi() {
     }
 
     const { data, ok } = await ConnectApi.get<OffsetPagination<Profile>>(
-      'http://127.0.0.1:8000/profiles',
+      `${BASE_URL}/profiles`,
       jwt,
       {
         user_id: userId,
@@ -71,7 +72,7 @@ export default function useProfileApi() {
 
   async function getProfile(id: string) {
     const { data, ok } = await ConnectApi.get<Profile>(
-      `http://127.0.0.1:8000/profiles/${id}`,
+      `${BASE_URL}/profiles/${id}`,
       jwt
     );
 
@@ -89,7 +90,7 @@ export default function useProfileApi() {
     await createMods(modList);
 
     await ConnectApi.post<ProfileCreate, Profile>(
-      'http://127.0.0.1:8000/profiles',
+      `${BASE_URL}/profiles`,
       {
         name,
         game,
@@ -118,7 +119,7 @@ export default function useProfileApi() {
     for (const mod of modList) {
       if (mod.id) {
         await ConnectApi.post<ModUpsert, Profile>(
-          'http://127.0.0.1:8000/mods',
+          `${BASE_URL}/mods`,
           {
             id: mod.id,
             name: mod.name,
@@ -132,7 +133,7 @@ export default function useProfileApi() {
         );
       } else {
         await ConnectApi.post<ManualModUpsert, Profile>(
-          'http://127.0.0.1:8000/mods/manual',
+          `${BASE_URL}/mods/manual`,
           {
             name: mod.name,
             description: mod.description,

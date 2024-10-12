@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/card';
 import CenteredContent from '@/components/layouts/centered-content';
 import { ConnectApi } from '@/utils/request';
+import { BASE_URL } from '@/utils/constants';
 
 const formSchema = z.object({
   nexusUsername: z.string().max(128),
@@ -50,7 +51,7 @@ export default function Login() {
 
   async function login(nexusUsername: string, password: string) {
     const { data, jwt } = await ConnectApi.post<LoginSchema, UserDTO>(
-      'http://127.0.0.1:8000/login',
+      `${BASE_URL}/login`,
       {
         nexus_username: nexusUsername,
         password,

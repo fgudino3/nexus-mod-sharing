@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { ConnectApi } from '@/utils/request';
 import User from '@/interfaces/User';
 import { useState } from 'react';
+import { BASE_URL } from '@/utils/constants';
 
 export default function Verify() {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ export default function Verify() {
 
   async function verifyAccount() {
     const { ok } = await ConnectApi.postNoBody<User>(
-      'http://127.0.0.1:8000/verify?token=' + token
+      `${BASE_URL}/verify?token=${token}`
     );
 
     if (ok) {

@@ -6,6 +6,7 @@ import User, {
 import { useNavigate } from 'react-router-dom';
 import { useUserState } from '@/states/userState';
 import { ConnectApi } from '@/utils/request';
+import { BASE_URL } from '@/utils/constants';
 
 export default function useUserApi() {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ export default function useUserApi() {
 
   async function register(profile: NexusProfile, password: string) {
     const { ok } = await ConnectApi.post<RegistrationSchema, User>(
-      'http://127.0.0.1:8000/register',
+      `${BASE_URL}/register`,
       {
         email: profile.email,
         nexusUsername: profile.name,
@@ -34,12 +35,12 @@ export default function useUserApi() {
 
   async function getConnections() {
     const { data: following } = await ConnectApi.get<UserDTO[]>(
-      'http://127.0.0.1:8000/users/following',
+      `${BASE_URL}/users/following`,
       jwt
     );
 
     const { data: followers } = await ConnectApi.get<UserDTO[]>(
-      'http://127.0.0.1:8000/users/following',
+      `${BASE_URL}/users/following`,
       jwt
     );
 
@@ -48,7 +49,7 @@ export default function useUserApi() {
 
   async function follow(userId: string) {
     const { data, ok } = await ConnectApi.postNoBody<UserDTO>(
-      'http://127.0.0.1:8000/users/follow/' + userId,
+      `${BASE_URL}/users/follow/` + userId,
       jwt
     );
 
@@ -59,7 +60,7 @@ export default function useUserApi() {
 
   async function unfollow(userId: string) {
     const { data, ok } = await ConnectApi.postNoBody<UserDTO>(
-      'http://127.0.0.1:8000/users/unfollow/' + userId,
+      `${BASE_URL}/users/unfollow/` + userId,
       jwt
     );
 
