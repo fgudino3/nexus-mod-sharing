@@ -6,22 +6,19 @@ on:
     branches:
       - main
 
-defaults:
-  run:
-    working-directory: nexus-connect
-
 jobs:
   publish-tauri:
     permissions:
       contents: write
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - platform: 'windows-latest'
-            args: ''
 
-    runs-on: ${{ matrix.platform }}
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        working-directory: ./nexus-connect
+        
     steps:
       - uses: actions/checkout@v4
 
@@ -30,17 +27,17 @@ jobs:
         with:
           node-version: lts/*
           cache: 'npm' # Set this to npm, yarn or pnpm.
+          cache-dependency-path: ./nexus-connect/package-lock.json
 
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable # Set this to dtolnay/rust-toolchain@nightly
         with:
-          # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+          workspaces: './nexus-connect/src-tauri -> target'
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: './src-tauri -> target'
+          workspaces: './nexus-connect/src-tauri -> target'
 
       - name: install frontend dependencies
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
@@ -48,6 +45,7 @@ jobs:
 
       - uses: tauri-apps/tauri-action@v0
         with:
+          projectPath: ./nexus-connect
           tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: 'App v__VERSION__'
           releaseBody: 'See the assets to download this version and install.'
