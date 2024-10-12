@@ -1,10 +1,14 @@
-name: 'publish'
+name: 'Publish Nexus Connect Windows App'
 
 on:
   workflow_dispatch:
   push:
     branches:
       - main
+
+defaults:
+  run:
+    working-directory: nexus-connect
 
 jobs:
   publish-tauri:
@@ -36,7 +40,7 @@ jobs:
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: './nexus-connect/src-tauri -> target'
+          workspaces: './src-tauri -> target'
 
       - name: install frontend dependencies
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
@@ -44,7 +48,6 @@ jobs:
 
       - uses: tauri-apps/tauri-action@v0
         with:
-          projectPath: './nexus-connect'
           tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: 'App v__VERSION__'
           releaseBody: 'See the assets to download this version and install.'
