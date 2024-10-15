@@ -17,7 +17,7 @@ export default function Sidebar({ children, headerHeight }: SidebarProps) {
   return (
     <aside
       style={{ paddingTop: headerHeight + 'px' }}
-      className="h-screen fixed"
+      className="h-screen fixed z-10"
     >
       <nav className="h-full flex flex-col bg-accent shadow-sm ">
         <SidebarContext.Provider value={{ expanded }}>
@@ -80,7 +80,7 @@ export function SidebarItem({ icon, text, active, path }: SidebarItemProps) {
         <div
           className={`
           absolute left-full rounded-md px-2 py-1 ml-6
-          bg-primary text-sm z-99
+          bg-primary text-sm
           invisible opacity-20 -translate-x-3 transition-all
           group-hover:visible group-hover:opacity-100 group-hover:translate-x-0
       `}
