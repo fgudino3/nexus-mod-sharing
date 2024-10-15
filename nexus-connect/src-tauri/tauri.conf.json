@@ -17,7 +17,7 @@
     ]
   },
   "productName": "nexus-connect",
-  "mainBinaryName": "nexus-connect",
+  "mainBinaryName": "Nexus Connect",
   "version": "0.1.0",
   "identifier": "com.nexus-connect.app",
   "plugins": {},
