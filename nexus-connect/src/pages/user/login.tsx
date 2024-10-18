@@ -115,8 +115,15 @@ export default function Login() {
                   </FormItem>
                 )}
               />
+              <div className="mt-2 text-center text-sm">
+                Forgot your{' '}
+                <NavLink to="/forgot-password" className="underline">
+                  password
+                </NavLink>
+                ?
+              </div>
               <Button type="submit" className="!bg-primary w-full">
-                Submit
+                Log In
               </Button>
             </form>
           </Form>
