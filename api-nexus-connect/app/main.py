@@ -3,7 +3,7 @@ from app.settings import AppConfig
 from .controllers.mod_controller import ModController
 from .controllers.profile_controller import ModProfileController
 from .lib.providers import provide_limit_offset_pagination
-from .lib.listeners import send_verify_token_email_handler
+from .lib.listeners import event_listeners
 from .lib.auth import litestar_users
 
 from litestar.contrib.sqlalchemy.plugins import (
@@ -35,5 +35,5 @@ app = Litestar(
     route_handlers=[UserController, ModController, ModProfileController],
     plugins=[sqlalchemy_plugin, litestar_users],
     dependencies={"limit_offset": Provide(provide_limit_offset_pagination)},
-    listeners=[send_verify_token_email_handler],
+    listeners=event_listeners,
 )

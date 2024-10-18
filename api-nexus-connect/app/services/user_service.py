@@ -146,6 +146,24 @@ class UserService(BaseUserService[User, Role]):  # type: ignore[type-var]
         if request:
             request.app.emit("register_verify", email=user.email, token=token)
 
-    async def send_password_reset_token(self, user: User, token: str) -> None:
-        """Send token via email"""
-        print(user.email, token)
+    async def initiate_password_reset(
+        self, email: str, request: Request | None = None
+    ) -> None:
+        """Initiate the password reset flow.
+
+        Args:
+            email: Email of the user who has forgotten their password.
+        """
+        user = await self.get_user_by(
+            email=email
+        )  # TODO: something about timing attacks.
+        if user is None:
+            return
+        token = self.generate_token(user.id, aud="reset_password")
+        await self.send_password_reset_token(user, token, request)
+
+    async def send_password_reset_token(
+        self, user: User, token: str, request: Request | None = None
+    ) -> None:
+        if request:
+            request.app.emit("password_reset", email=user.email, token=token)

@@ -8,6 +8,9 @@ from litestar import Controller, get, post
 from litestar.di import Provide
 
 from litestar_users.dependencies import provide_user_service
+from litestar_users.schema import (
+    ForgotPasswordSchema,
+)
 
 
 class UserController(Controller):
@@ -59,3 +62,12 @@ class UserController(Controller):
         user = await user_service.unfollow(request.user, user_id)
 
         return user
+
+    @post("/forgot-password", dto=None)
+    async def forgot_password(
+        self,
+        data: ForgotPasswordSchema,
+        user_service: UserService,
+        request: AuthRequest,
+    ) -> None:
+        await user_service.initiate_password_reset(data.email, request)

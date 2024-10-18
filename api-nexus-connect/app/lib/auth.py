@@ -25,7 +25,6 @@ from litestar_users.config import (
     CurrentUserHandlerConfig,
     RoleManagementHandlerConfig,
     UserManagementHandlerConfig,
-    PasswordResetHandlerConfig,
     RegisterHandlerConfig,
     VerificationHandlerConfig,
 )
@@ -52,7 +51,6 @@ litestar_users = LitestarUsersPlugin(
         user_service_class=UserService,  # pyright: ignore
         auth_handler_config=AuthHandlerConfig(),
         current_user_handler_config=CurrentUserHandlerConfig(),
-        password_reset_handler_config=PasswordResetHandlerConfig(),
         register_handler_config=RegisterHandlerConfig(),
         role_management_handler_config=RoleManagementHandlerConfig(
             guards=[roles_accepted("admin")]
@@ -63,5 +61,6 @@ litestar_users = LitestarUsersPlugin(
         default_token_expiration=timedelta(weeks=52),
         authentication_request_schema=UserLoginSchema,
         user_auth_identifier="nexus_username",
+        auth_exclude_paths=["/schema", "/users/forgot-password"],
     )
 )
