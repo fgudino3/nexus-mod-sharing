@@ -61,6 +61,10 @@ litestar_users = LitestarUsersPlugin(
         default_token_expiration=timedelta(weeks=52),
         authentication_request_schema=UserLoginSchema,
         user_auth_identifier="nexus_username",
-        auth_exclude_paths=["/schema", "/users/forgot-password"],
+        auth_exclude_paths=[
+            "/schema",
+            "/users/forgot-password",
+            "/users/reset-password",
+        ],
     )
 )

@@ -10,6 +10,7 @@ from litestar.di import Provide
 from litestar_users.dependencies import provide_user_service
 from litestar_users.schema import (
     ForgotPasswordSchema,
+    ResetPasswordSchema,
 )
 
 
@@ -71,3 +72,11 @@ class UserController(Controller):
         request: AuthRequest,
     ) -> None:
         await user_service.initiate_password_reset(data.email, request)
+        return
+
+    @post("/reset-password", dto=None)
+    async def reset_password(
+        self, data: ResetPasswordSchema, user_service: UserService
+    ) -> None:
+        await user_service.reset_password(data.token, data.password)
+        return
