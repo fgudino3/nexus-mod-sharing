@@ -22,6 +22,7 @@ import {
 import CenteredContent from '@/components/layouts/centered-content';
 import { ConnectApi } from '@/utils/request';
 import { BASE_URL } from '@/utils/constants';
+import { toast } from 'sonner';
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -43,14 +44,16 @@ export default function forgotPassword() {
 
   async function sendResetPasswordEmail(email: string) {
     const { ok } = await ConnectApi.post<{ email: string }, null>(
-      `${BASE_URL}/forgot-password`,
+      `${BASE_URL}/users/forgot-password`,
       {
         email,
       }
     );
 
     if (ok) {
-      navigate('/login', { replace: true });
+      navigate('/reset-password', { replace: true });
+    } else {
+      toast.error('No account found with this email.');
     }
   }
 

@@ -26,15 +26,11 @@ import { toast } from 'sonner';
 import useUserApi from '@/hooks/useUserApi';
 import { NexusProfile } from '@/interfaces/User';
 import { open } from '@tauri-apps/plugin-shell';
-
-// Minimum 7 characters, at least one uppercase letter, one lowercase letter, one number and one special character
-const passwordValidation = new RegExp(
-  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{7,}$/
-);
+import { PASSWORD_REGEX } from '@/utils/constants';
 
 const formSchema = z
   .object({
-    password: z.string().min(7).regex(passwordValidation, {
+    password: z.string().min(7).regex(PASSWORD_REGEX, {
       message:
         'Password must contain at least 1 uppercase, lowercase, number and special character',
     }),
