@@ -6,11 +6,11 @@ import { ConnectApi } from '@/utils/request';
 import User from '@/interfaces/User';
 import { useState } from 'react';
 import { BASE_URL } from '@/utils/constants';
+import { toast } from 'sonner';
 
 export default function Verify() {
   const navigate = useNavigate();
   const [token, setToken] = useState('');
-  const [verified, setVerified] = useState(false);
 
   async function verifyAccount() {
     const { ok } = await ConnectApi.postNoBody<User>(
@@ -18,19 +18,9 @@ export default function Verify() {
     );
 
     if (ok) {
-      setVerified(() => true);
+      navigate('/login');
+      toast.success('Account verified. You can now log in.');
     }
-  }
-
-  if (verified) {
-    return (
-      <div>
-        <h1 className="text-2xl font-bold">Account verified!</h1>
-        <Button onClick={() => navigate('/login')} className="mt-10">
-          Go to login
-        </Button>
-      </div>
-    );
   }
 
   return (
