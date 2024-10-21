@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUserState } from '@/states/userState';
 import { ConnectApi } from '@/utils/request';
 import { BASE_URL } from '@/utils/constants';
+import { toast } from 'sonner';
 
 export default function useUserApi() {
   const navigate = useNavigate();
@@ -30,6 +31,10 @@ export default function useUserApi() {
 
     if (ok) {
       navigate('/verify');
+    } else {
+      toast.error(
+        'There is already an account associated with this nexus account.'
+      );
     }
   }
 

@@ -64,7 +64,8 @@ export default function Register() {
   const [currentStep, setCurrentStep] = useState(0);
   const [apiKey, setApiKey] = useState('');
   const [nexusProfile, setNexusProfile] = useState<NexusProfile>();
-  const [loading, setLoading] = useState(false);
+  const [loadingNexus, setLoadingNexus] = useState(false);
+  const [loadingRegister, setLoadingRegister] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -80,7 +81,10 @@ export default function Register() {
       return;
     }
 
-    register(nexusProfile, values.password);
+    setLoadingRegister(() => true);
+    register(nexusProfile, values.password).finally(() =>
+      setLoadingRegister(() => false)
+    );
   }
 
   useEffect(() => {
@@ -93,14 +97,14 @@ export default function Register() {
     if (!apiKey && !key) {
       return;
     }
-    setLoading(() => true);
+    setLoadingNexus(() => true);
 
     const profile = await getNexusProfileAsync(key ?? apiKey);
 
     if (!profile) {
       toast.error('Invalid API key');
       setApiKey(() => '');
-      setLoading(() => false);
+      setLoadingNexus(() => false);
       return;
     }
 
@@ -109,12 +113,13 @@ export default function Register() {
 
     stepper.next();
     setCurrentStep((step) => step + 1);
-    setLoading(() => false);
+    setLoadingNexus(() => false);
   }
 
   return (
     <CenteredContent>
-      {loading && <LoadingDialog text="Verifying Nexus Api Key..." />}
+      {loadingNexus && <LoadingDialog text="Verifying Nexus Api Key..." />}
+      {loadingRegister && <LoadingDialog text="Registering account" />}
       <div className="mb-5 flex flex-col justify-center items-center space-y-5">
         <h1 className="text-3xl">Create An Account</h1>
         <Stepper steps={stepper.all} currentStep={currentStep} />
