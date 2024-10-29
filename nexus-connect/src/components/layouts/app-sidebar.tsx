@@ -35,7 +35,8 @@ export default function AppSidebar({ headerHeight }: { headerHeight: number }) {
         active={location.pathname.startsWith('/profiles')}
       />
       <div className="my-3 border-t-3 dark:border-zinc-700" />
-      <SidebarHeader>Following</SidebarHeader>
+      <SidebarHeader>Following ({following.length})</SidebarHeader>
+
       {following.map((user) => (
         <SidebarItem
           key={user.id}
